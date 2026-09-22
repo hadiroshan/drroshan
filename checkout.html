@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسویه حساب | دکتر هادی روشن</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="favicon-64x64.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="description" content="تکمیل اطلاعات سفارش و انتخاب روش پرداخت">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+/* inlined from shop.css (canonical source kept in shop.css) */
+/* ============================================================
+   Shop Design System — cart / checkout / payment pages
+   Shared with index.html design language (Vazirmatn, blue/cyan)
+   ============================================================ */
+:root {
+    --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #3b82f6;
+    --secondary: #0ea5e9; --accent: #06b6d4; --accent-light: #22d3ee;
+    --dark: #0f172a; --dark-secondary: #1e293b;
+    --gray: #64748b; --gray-light: #94a3b8;
+    --light: #f1f5f9; --lighter: #f8fafc; --white: #ffffff;
+    --gradient-primary: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+    --gradient-hero: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+    --gradient-green: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    --gradient-warm: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+    --radius: 12px; --radius-lg: 20px; --radius-full: 9999px;
+    --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    --bg: var(--lighter); --bg-card: var(--white); --text: var(--dark); --text-muted: var(--gray);
+    --border: rgba(0,0,0,0.06);
+}
+[data-theme="dark"] {
+    --bg: #0f172a; --bg-card: #1e293b; --text: #f1f5f9; --text-muted: #94a3b8;
+    --light: #1e293b; --lighter: #0f172a; --white: #1e293b;
+    --border: rgba(255,255,255,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Vazirmatn','Tahoma',sans-serif; background:var(--bg); color:var(--text); line-height:1.8; direction:rtl; min-height:100vh; transition:background .4s,color .4s; }
+a { text-decoration:none; color:inherit; }
+button { font-family:inherit; }
+input,select,textarea { font-family:inherit; }
+.container { max-width:1100px; margin:0 auto; padding:0 20px; }
+
+/* ===== Shop navbar ===== */
+.shop-nav { background:var(--gradient-hero); padding:14px 0; position:sticky; top:0; z-index:100; box-shadow:0 4px 30px rgba(0,0,0,0.25); }
+.shop-nav .container { display:flex; justify-content:space-between; align-items:center; }
+.shop-logo { display:flex; align-items:center; gap:12px; color:white; font-weight:700; font-size:1.05rem; }
+.shop-logo .icon { width:42px; height:42px; background:var(--gradient-primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; overflow:hidden; }
+        .shop-logo .icon img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
+.shop-steps { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.55); font-size:0.8rem; font-weight:600; flex-wrap:wrap; }
+.shop-steps .s { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:var(--radius-full); transition:var(--transition); white-space:nowrap; }
+.shop-steps .s.done { color:#22c55e; }
+.shop-steps .s.active { background:rgba(37,99,235,0.35); color:white; }
+.shop-steps .sep { opacity:0.4; }
+@media (max-width:640px){ .shop-steps .s span.lbl { display:none; } .shop-steps .s.active span.lbl{display:inline;} }
+
+/* ===== Page & cards ===== */
+.shop-main { padding:40px 0 80px; }
+.page-title { font-size:1.7rem; font-weight:800; margin-bottom:6px; }
+.page-sub { color:var(--text-muted); font-size:0.95rem; margin-bottom:30px; }
+.card { background:var(--bg-card); border-radius:var(--radius-lg); border:1px solid var(--border); box-shadow:var(--shadow-lg); padding:25px; }
+
+/* ===== Cart layout ===== */
+.cart-layout { display:grid; grid-template-columns:1.6fr 1fr; gap:25px; align-items:start; }
+@media (max-width:900px){ .cart-layout { grid-template-columns:1fr; } }
+
+/* Cart items */
+.cart-page-item { display:flex; gap:16px; padding:18px 0; border-bottom:1px solid var(--border); align-items:center; }
+.cart-page-item:last-child { border-bottom:none; }
+.cart-page-img { width:74px; height:74px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:2rem; flex-shrink:0; }
+.cart-page-info { flex:1; min-width:0; }
+.cart-page-name { font-weight:700; font-size:1rem; margin-bottom:2px; }
+.cart-page-price { color:var(--primary); font-weight:700; font-size:0.9rem; }
+.qty-box { display:inline-flex; align-items:center; gap:10px; margin-top:10px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-full); padding:4px; }
+.qty-box button { width:30px; height:30px; border-radius:50%; border:none; background:var(--bg-card); cursor:pointer; font-size:1rem; font-weight:700; color:var(--text); transition:var(--transition); box-shadow:var(--shadow-sm); }
+.qty-box button:hover { background:var(--primary); color:white; }
+.qty-box .q { min-width:24px; text-align:center; font-weight:700; font-size:0.95rem; }
+.cart-page-line { font-weight:800; color:var(--primary); white-space:nowrap; font-size:0.95rem; }
+.cart-page-remove { width:34px; height:34px; border-radius:10px; border:none; background:rgba(239,68,68,0.08); color:#ef4444; cursor:pointer; font-size:1rem; transition:var(--transition); flex-shrink:0; }
+.cart-page-remove:hover { background:#ef4444; color:white; }
+
+.cart-empty-page { text-align:center; padding:70px 20px; color:var(--text-muted); }
+.cart-empty-page .big { font-size:4.5rem; margin-bottom:15px; opacity:0.35; }
+.cart-empty-page h3 { color:var(--text); margin-bottom:8px; }
+
+/* Summary */
+.summary-title { font-size:1.1rem; font-weight:800; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+.sum-row { display:flex; justify-content:space-between; padding:9px 0; font-size:0.92rem; color:var(--text-muted); }
+.sum-row b { color:var(--text); }
+.sum-row.total { border-top:2px solid var(--border); margin-top:8px; padding-top:14px; font-size:1.05rem; }
+.sum-row.total b { color:var(--primary); font-size:1.25rem; font-weight:800; }
+.sum-row.discount b { color:#22c55e; }
+.coupon-row { display:flex; gap:8px; margin:14px 0; }
+.coupon-row input { flex:1; padding:11px 16px; border:2px solid var(--border); border-radius:var(--radius); background:var(--bg); color:var(--text); font-size:0.9rem; transition:var(--transition); }
+.coupon-row input:focus { outline:none; border-color:var(--primary); }
+.coupon-row button { padding:11px 18px; background:var(--dark-secondary); color:white; border:none; border-radius:var(--radius); font-weight:600; font-size:0.85rem; cursor:pointer; transition:var(--transition); }
+.coupon-row button:hover { background:var(--primary); }
+.coupon-msg { font-size:0.78rem; margin-top:-6px; margin-bottom:10px; min-height:18px; }
+.coupon-msg.ok { color:#22c55e; }
+.coupon-msg.err { color:#ef4444; }
+
+/* ===== Buttons ===== */
+.btn-x { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:14px 30px; border-radius:var(--radius-full); font-size:0.95rem; font-weight:700; cursor:pointer; border:none; transition:var(--transition); }
+.btn-x-primary { background:var(--gradient-primary); color:white; box-shadow:0 4px 18px rgba(37,99,235,0.35); }
+.btn-x-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(37,99,235,0.45); }
+.btn-x-green { background:var(--gradient-green); color:white; box-shadow:0 4px 18px rgba(5,150,105,0.35); }
+.btn-x-green:hover { transform:translateY(-2px); }
+.btn-x-ghost { background:transparent; color:var(--text-muted); border:2px solid var(--border); }
+.btn-x-ghost:hover { border-color:var(--primary); color:var(--primary); }
+.btn-x-block { width:100%; }
+.btn-x:disabled { opacity:0.5; cursor:not-allowed; transform:none !important; }
+
+/* ===== Forms ===== */
+.f-group { margin-bottom:16px; }
+.f-group label { display:block; font-size:0.85rem; font-weight:600; margin-bottom:7px; }
+.f-group label .req { color:#ef4444; }
+.f-group input, .f-group select, .f-group textarea { width:100%; padding:13px 16px; border:2px solid var(--border); border-radius:var(--radius); background:var(--bg); color:var(--text); font-size:0.95rem; transition:var(--transition); }
+.f-group input:focus, .f-group select:focus, .f-group textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,0.1); }
+.f-group input.ltr { direction:ltr; text-align:left; }
+.f-error { color:#ef4444; font-size:0.75rem; margin-top:5px; display:none; }
+.f-group.invalid input { border-color:#ef4444; }
+.f-group.invalid .f-error { display:block; }
+.f-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:560px){ .f-row { grid-template-columns:1fr; } }
+
+/* ===== Checkout steps ===== */
+.co-steps { display:flex; gap:8px; margin-bottom:28px; }
+.co-step { flex:1; text-align:center; padding:12px 6px; border-radius:var(--radius); background:var(--bg-card); border:1px solid var(--border); font-size:0.8rem; font-weight:700; color:var(--text-muted); transition:var(--transition); position:relative; }
+.co-step .n { display:inline-flex; width:24px; height:24px; border-radius:50%; background:var(--border); color:var(--text-muted); align-items:center; justify-content:center; font-size:0.75rem; margin-left:6px; transition:var(--transition); }
+.co-step.active { border-color:var(--primary); color:var(--primary); background:rgba(37,99,235,0.06); }
+.co-step.active .n { background:var(--primary); color:white; }
+.co-step.done { border-color:#22c55e; color:#22c55e; }
+.co-step.done .n { background:#22c55e; color:white; }
+.co-pane { display:none; animation:paneIn .4s cubic-bezier(0.4,0,0.2,1); }
+.co-pane.active { display:block; }
+@keyframes paneIn { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+.co-actions { display:flex; gap:10px; margin-top:22px; flex-wrap:wrap; }
+.co-actions .btn-x { flex:1; min-width:180px; }
+
+/* Payment methods */
+.pay-grid { display:grid; gap:12px; }
+.pay-opt { display:flex; align-items:center; gap:14px; padding:16px 18px; border:2px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:var(--transition); }
+.pay-opt:hover { border-color:var(--primary-light); }
+.pay-opt.selected { border-color:var(--primary); background:rgba(37,99,235,0.05); }
+.pay-opt .radio { width:20px; height:20px; border:2px solid var(--gray-light); border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+.pay-opt.selected .radio { border-color:var(--primary); }
+.pay-opt.selected .radio::after { content:''; width:11px; height:11px; border-radius:50%; background:var(--primary); }
+.pay-opt .ic { font-size:1.5rem; }
+.pay-opt h4 { font-size:0.95rem; }
+.pay-opt p { font-size:0.78rem; color:var(--text-muted); }
+.pay-note { display:none; margin-top:14px; background:var(--bg); border-radius:var(--radius); padding:16px; font-size:0.85rem; color:var(--text-muted); }
+.pay-note.show { display:block; animation:paneIn .3s; }
+.pay-note .cardnum { font-size:1.05rem; font-weight:800; direction:ltr; text-align:center; letter-spacing:2px; margin:8px 0; color:var(--text); }
+.pay-note .copy-btn { display:block; margin:8px auto 0; padding:6px 18px; font-size:0.78rem; border:none; border-radius:var(--radius-full); background:var(--primary); color:white; cursor:pointer; }
+
+/* ===== Success ===== */
+.success-wrap { text-align:center; padding:30px 10px; }
+.success-wrap .icon { font-size:4.5rem; margin-bottom:10px; animation:popIn .6s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
+.success-wrap h2 { color:#22c55e; margin-bottom:8px; }
+.success-wrap p { color:var(--text-muted); }
+.receipt { max-width:430px; margin:25px auto; background:var(--bg); border-radius:var(--radius-lg); padding:22px; text-align:right; }
+.receipt .r-row { display:flex; justify-content:space-between; padding:7px 0; font-size:0.88rem; color:var(--text-muted); border-bottom:1px dashed var(--border); }
+.receipt .r-row:last-child { border-bottom:none; }
+.receipt .r-row b { color:var(--text); }
+.receipt .r-row .ok { color:#22c55e; font-weight:800; }
+.tr-code { font-size:1.1rem; font-weight:800; letter-spacing:1px; direction:ltr; color:var(--primary); }
+
+/* ===== Gateway (payment.html) ===== */
+.gateway-bg { min-height:100vh; background:var(--gradient-hero); display:flex; align-items:center; justify-content:center; padding:20px; }
+.gateway { width:430px; max-width:100%; background:var(--bg-card); border-radius:var(--radius-lg); box-shadow:0 30px 80px rgba(0,0,0,0.5); overflow:hidden; animation:gwIn .5s cubic-bezier(0.34,1.3,0.64,1); }
+@keyframes gwIn { from{opacity:0;transform:translateY(30px) scale(0.96);} to{opacity:1;transform:scale(1);} }
+.gw-head { background:var(--gradient-primary); color:white; padding:18px 25px; display:flex; justify-content:space-between; align-items:center; }
+.gw-head .bank { display:flex; align-items:center; gap:10px; font-weight:800; }
+.gw-head .bank .logo { width:38px; height:38px; background:rgba(255,255,255,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+.gw-head .secure { display:flex; align-items:center; gap:6px; font-size:0.72rem; background:rgba(255,255,255,0.15); padding:5px 12px; border-radius:var(--radius-full); }
+.gw-timer { background:#fef3c7; color:#92400e; text-align:center; font-size:0.8rem; font-weight:700; padding:8px; }
+.gw-timer b { font-size:0.95rem; }
+.gw-body { padding:25px; }
+.gw-merchant { display:flex; justify-content:space-between; align-items:center; background:var(--bg); border-radius:var(--radius); padding:14px 18px; margin-bottom:20px; font-size:0.85rem; }
+.gw-merchant b { font-size:0.95rem; }
+.gw-amount { text-align:center; margin-bottom:22px; }
+.gw-amount .lbl { color:var(--text-muted); font-size:0.8rem; }
+.gw-amount .val { font-size:2rem; font-weight:900; color:var(--primary); }
+.gw-amount .cur { font-size:0.85rem; color:var(--text-muted); }
+.gw-fields label { display:block; font-size:0.8rem; font-weight:600; margin-bottom:6px; color:var(--text-muted); }
+.gw-cardnum-wrap { position:relative; margin-bottom:14px; }
+.gw-cardnum { width:100%; padding:14px 16px; border:2px solid var(--border); border-radius:var(--radius); font-size:1.15rem; font-weight:700; letter-spacing:3px; direction:ltr; text-align:center; transition:var(--transition); background:var(--bg); color:var(--text); }
+.gw-cardnum:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,0.12); }
+.gw-cardnum.valid { border-color:#22c55e; }
+.gw-cardnum.invalid { border-color:#ef4444; }
+.gw-card-type { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.7rem; font-weight:800; color:var(--gray-light); }
+.gw-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+.gw-row input { width:100%; padding:13px 14px; border:2px solid var(--border); border-radius:var(--radius); font-size:0.95rem; direction:ltr; text-align:center; font-weight:700; background:var(--bg); color:var(--text); transition:var(--transition); }
+.gw-row input:focus { outline:none; border-color:var(--primary); }
+.gw-cvv-wrap { position:relative; }
+.gw-cvv-hint { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:1rem; opacity:0.5; cursor:help; }
+.gw-pin-row { display:flex; gap:8px; justify-content:center; direction:ltr; margin:6px 0 16px; }
+.gw-pin { width:48px; height:56px; text-align:center; font-size:1.4rem; font-weight:800; border:2px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); transition:var(--transition); }
+.gw-pin:focus { outline:none; border-color:var(--primary); transform:scale(1.05); }
+.gw-pin.filled { border-color:var(--primary-light); }
+.captcha-row { display:flex; gap:10px; align-items:center; margin-bottom:18px; }
+.captcha-code { background:repeating-linear-gradient(45deg,var(--bg),var(--bg) 4px,var(--border) 4px,var(--border) 8px); border:2px solid var(--border); border-radius:var(--radius); padding:10px 18px; font-size:1.2rem; font-weight:900; letter-spacing:5px; direction:ltr; user-select:none; font-style:italic; color:var(--dark); }
+[data-theme="dark"] .captcha-code { color:var(--text); }
+.captcha-row input { flex:1; padding:12px 14px; border:2px solid var(--border); border-radius:var(--radius); font-size:0.95rem; background:var(--bg); color:var(--text); }
+.captcha-row input:focus { outline:none; border-color:var(--primary); }
+.captcha-refresh { width:42px; height:42px; border:2px solid var(--border); background:var(--bg); border-radius:var(--radius); cursor:pointer; font-size:1rem; transition:var(--transition); flex-shrink:0; }
+.captcha-refresh:hover { border-color:var(--primary); transform:rotate(180deg); }
+.gw-submit { width:100%; padding:15px; background:var(--gradient-green); color:white; border:none; border-radius:var(--radius); font-size:1rem; font-weight:800; cursor:pointer; transition:var(--transition); display:flex; align-items:center; justify-content:center; gap:8px; }
+.gw-submit:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(5,150,105,0.4); }
+.gw-cancel { width:100%; margin-top:10px; padding:12px; background:transparent; border:2px solid var(--border); color:var(--text-muted); border-radius:var(--radius); font-size:0.9rem; font-weight:600; cursor:pointer; transition:var(--transition); }
+.gw-cancel:hover { border-color:#ef4444; color:#ef4444; }
+.gw-foot { text-align:center; font-size:0.7rem; color:var(--gray-light); padding:0 25px 20px; }
+
+/* Processing overlay */
+.gw-processing { position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; opacity:0; visibility:hidden; transition:var(--transition); color:white; }
+.gw-processing.show { opacity:1; visibility:visible; }
+.gw-processing .ring { width:70px; height:70px; border:4px solid rgba(255,255,255,0.15); border-top-color:var(--accent-light); border-radius:50%; animation:spin 0.9s linear infinite; margin-bottom:20px; }
+.gw-processing .msg { font-size:1rem; font-weight:600; }
+@keyframes spin { to{transform:rotate(360deg);} }
+
+/* OTP step inside gateway */
+.gw-otp-inputs { display:flex; gap:8px; justify-content:center; direction:ltr; margin:15px 0 5px; }
+.gw-otp-inputs input { width:44px; height:52px; text-align:center; font-size:1.3rem; font-weight:800; border:2px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); transition:var(--transition); }
+.gw-otp-inputs input:focus { outline:none; border-color:var(--primary); }
+.gw-hint { text-align:center; font-size:0.78rem; color:var(--text-muted); margin-bottom:10px; }
+.gw-hint b { color:var(--primary); direction:ltr; display:inline-block; }
+
+/* Result screens */
+.gw-result { text-align:center; padding:20px 0; display:none; }
+.gw-result.show { display:block; animation:paneIn .4s; }
+.gw-result .icon { font-size:4rem; margin-bottom:12px; }
+.gw-result h3 { font-size:1.2rem; margin-bottom:6px; }
+.gw-result.fail h3 { color:#ef4444; }
+.gw-result.ok h3 { color:#22c55e; }
+.gw-result p { color:var(--text-muted); font-size:0.88rem; }
+
+/* Toast (shared) */
+.toast-x { position:fixed; bottom:25px; right:50%; transform:translateX(50%) translateY(20px); background:var(--dark-secondary); color:white; padding:13px 26px; border-radius:var(--radius-full); font-size:0.88rem; font-weight:600; z-index:9999; opacity:0; visibility:hidden; transition:all .35s cubic-bezier(0.4,0,0.2,1); box-shadow:0 10px 35px rgba(0,0,0,0.35); }
+.toast-x.show { opacity:1; visibility:visible; transform:translateX(50%) translateY(0); }
+.toast-x.ok { background:var(--gradient-green); }
+.toast-x.err { background:linear-gradient(135deg,#ef4444,#f97316); }
+
+/* Footer */
+.shop-foot { text-align:center; padding:25px; color:var(--text-muted); font-size:0.8rem; border-top:1px solid var(--border); }
+.shop-foot a { color:var(--primary); font-weight:600; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="shop-nav">
+        <div class="container">
+            <a href="index.html" class="shop-logo">
+                <span class="icon"><img src="profile.png" alt="دکتر هادی روشن"></span>
+                <span>دکتر هادی روشن</span>
+            </a>
+            <div class="shop-steps">
+                <div class="s done">🛒 <span class="lbl">سبد خرید</span></div>
+                <span class="sep">←</span>
+                <div class="s active">📝 <span class="lbl">تسویه حساب</span></div>
+                <span class="sep">←</span>
+                <div class="s">💳 <span class="lbl">پرداخت</span></div>
+            </div>
+            <button class="btn-x-ghost btn-x" style="padding:8px 16px;font-size:0.8rem;" onclick="toggleThemeX()" data-theme-icon>🌙</button>
+        </div>
+    </nav>
+
+    <main class="shop-main container">
+        <h1 class="page-title">📝 تکمیل سفارش</h1>
+        <p class="page-sub">اطلاعات خود را وارد کنید و روش ارسال/پرداخت را انتخاب نمایید</p>
+
+        <div class="co-steps">
+            <div class="co-step done"><span class="n">✓</span> سبد خرید</div>
+            <div class="co-step active"><span class="n">۲</span> اطلاعات و پرداخت</div>
+            <div class="co-step"><span class="n">۳</span> درگاه بانکی</div>
+            <div class="co-step"><span class="n">۴</span> تایید نهایی</div>
+        </div>
+
+        <div class="cart-layout">
+            <!-- form -->
+            <div>
+                <!-- Pane 1: customer info -->
+                <div class="card co-pane active" id="paneInfo">
+                    <div class="summary-title">👤 اطلاعات خریدار</div>
+                    <div class="f-row">
+                        <div class="f-group">
+                            <label>نام و نام خانوادگی <span class="req">*</span></label>
+                            <input type="text" id="fName" placeholder="مثلا علی محمدی">
+                            <div class="f-error">نام را وارد کنید</div>
+                        </div>
+                        <div class="f-group">
+                            <label>شماره موبایل <span class="req">*</span></label>
+                            <input type="tel" id="fPhone" class="ltr" placeholder="09121234567" maxlength="11">
+                            <div class="f-error">شماره موبایل معتبر (۱۱ رقم با ۰۹) وارد کنید</div>
+                        </div>
+                    </div>
+                    <div class="f-row">
+                        <div class="f-group">
+                            <label>کد ملی <span class="req">*</span></label>
+                            <input type="text" id="fNational" class="ltr" placeholder="کد ملی ۱۰ رقمی" maxlength="10">
+                            <div class="f-error">کد ملی معتبر وارد کنید</div>
+                        </div>
+                        <div class="f-group">
+                            <label>ایمیل (اختیاری)</label>
+                            <input type="email" id="fEmail" class="ltr" placeholder="you@example.com">
+                            <div class="f-error">ایمیل معتبر نیست</div>
+                        </div>
+                    </div>
+                    <div class="f-group">
+                        <label>استان <span class="req">*</span></label>
+                        <select id="fProvince">
+                            <option value="">انتخاب استان...</option>
+                            <option>مازندران</option><option>تهران</option><option>اصفهان</option>
+                            <option>خراسان رضوی</option><option>فارس</option><option>آذربایجان شرقی</option>
+                            <option>البرز</option><option>گیلان</option><option>سایر استان‌ها</option>
+                        </select>
+                        <div class="f-error">استان را انتخاب کنید</div>
+                    </div>
+                    <div class="f-group">
+                        <label>آدرس کامل <span class="req">*</span></label>
+                        <textarea id="fAddress" rows="2" placeholder="شهر، خیابان، پلاک، واحد"></textarea>
+                        <div class="f-error">آدرس را وارد کنید</div>
+                    </div>
+                    <div class="f-row">
+                        <div class="f-group">
+                            <label>کد پستی</label>
+                            <input type="text" id="fPostal" class="ltr" placeholder="۱۰ رقم" maxlength="10">
+                            <div class="f-error">کد پستی باید ۱۰ رقم باشد</div>
+                        </div>
+                        <div class="f-group">
+                            <label>روش ارسال <span class="req">*</span></label>
+                            <select id="fShippingMethod">
+                                <option value="post">پست پیشتاز (۳ تا ۵ روز کاری)</option>
+                                <option value="tipax">تیپاکس (۲ روز کاری)</option>
+                                <option value="inperson">تحویل حضوری در رامسر</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="co-actions">
+                        <button class="btn-x btn-x-primary" onclick="submitInfo()">ادامه به روش پرداخت ←</button>
+                    </div>
+                </div>
+
+                <!-- Pane 2: payment method -->
+                <div class="card co-pane" id="panePay">
+                    <div class="summary-title">💳 روش پرداخت</div>
+                    <div class="pay-grid">
+                        <div class="pay-opt selected" data-method="gateway" onclick="selectPay(this)">
+                            <div class="radio"></div><div class="ic">🏦</div>
+                            <div><h4>درگاه پرداخت اینترنتی (شبا/سامان)</h4><p>پرداخت امن با کلیه کارت‌های شتاب — هدایت به درگاه بانکی</p></div>
+                        </div>
+                        <div class="pay-opt" data-method="card" onclick="selectPay(this)">
+                            <div class="radio"></div><div class="ic">💳</div>
+                            <div><h4>کارت به کارت</h4><p>واریز به کارت بانکی و ثبت رسید</p></div>
+                        </div>
+                        <div class="pay-opt" data-method="cod" onclick="selectPay(this)">
+                            <div class="radio"></div><div class="ic">📦</div>
+                            <div><h4>پرداخت در محل (COD)</h4><p>پرداخت هنگام تحویل بسته</p></div>
+                        </div>
+                    </div>
+
+                    <div class="pay-note" id="noteCard">
+                        <b>💳 کارت به کارت:</b>
+                        <div class="cardnum">6219-8610-2356-1234</div>
+                        به نام هادی روشن | بانک سامان
+                        <button class="copy-btn" onclick="copyCard()">کپی شماره کارت</button>
+                        <p style="margin-top:8px;font-size:0.78rem;">پس از واریز، رسید را برای شماره ۰۹۱۱۲۹۲۵۱۲۰ ارسال کنید.</p>
+                    </div>
+                    <div class="pay-note" id="noteCod">
+                        <b>📦 پرداخت در محل:</b> مبلغ سفارش هنگام تحویل به مامور پست پرداخت می‌شود. لطفا موجودی نقدی یا کارت‌خوان همراه داشته باشید.
+                    </div>
+
+                    <div class="co-actions">
+                        <button class="btn-x btn-x-ghost" onclick="showPane('paneInfo')">→ بازگشت</button>
+                        <button class="btn-x btn-x-primary" onclick="submitPayment()">🚀 پرداخت و ثبت سفارش</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- summary -->
+            <div>
+                <div class="card">
+                    <div class="summary-title">🧾 خلاصه سفارش</div>
+                    <div id="coSummaryItems"></div>
+                    <div class="sum-row" style="margin-top:8px;"><span>جمع کل</span><b id="coSubtotal">۰</b></div>
+                    <div class="sum-row discount" id="coDiscountRow" style="display:none;"><span>تخفیف</span><b id="coDiscount">۰</b></div>
+                    <div class="sum-row"><span>ارسال</span><b id="coShipping">۰</b></div>
+                    <div class="sum-row total"><span>قابل پرداخت</span><b id="coTotal">۰</b></div>
+                    <a href="cart.html" style="font-size:0.8rem;color:var(--primary);display:block;text-align:center;margin-top:14px;">ویرایش سبد خرید</a>
+                </div>
+                <div class="card" style="margin-top:15px;font-size:0.78rem;color:var(--text-muted);line-height:2;">
+                    🔒 اطلاعات شما رمزنگاری شده و محفوظ است.<br>
+                    🎓 پس از تایید سفارش، لینک دوره‌ها برای شما ارسال می‌شود.<br>
+                    📞 پشتیبانی: ۰۹۱۱۲۹۲۵۱۲۰
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="shop-foot container">
+        <a href="index.html">بازگشت به سایت اصلی</a> | © ۱۴۰۵ دکتر هادی روشن
+    </footer>
+
+    <script>
+/* inlined from shop.js (canonical source kept in shop.js) */
+/* ============================================================
+   Shared shop engine — cart state, coupons, orders, checkout,
+   simulated payment gateway, theme, toasts.
+   Used by cart.html, checkout.html, payment.html
+   ============================================================ */
+
+// ---------- utilities ----------
+const faNum = n => Number(n).toLocaleString('fa-IR');
+const money = n => faNum(n) + ' تومان';
+const toEnDigits = s => String(s)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const onlyDigits = s => toEnDigits(s).replace(/[^0-9]/g, '');
+
+function toastX(msg, type = '') {
+    let t = document.getElementById('toastX');
+    if (!t) { t = document.createElement('div'); t.id = 'toastX'; t.className = 'toast-x'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.className = 'toast-x show ' + type;
+    clearTimeout(t._h);
+    t._h = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ---------- theme ----------
+(function initTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+})();
+function toggleThemeX() {
+    const el = document.documentElement;
+    const dark = el.getAttribute('data-theme') === 'dark';
+    if (dark) { el.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+    else { el.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+    document.querySelectorAll('[data-theme-icon]').forEach(b => b.textContent = dark ? '🌙' : '☀️');
+}
+
+// ---------- catalog (single source of truth, shared with index.html) ----------
+const CATALOG = {
+    'دوره جامع پایتون':        { price: 12000000, emoji: '🐍', gradient: '#1e3a5f,#2563eb' },
+    'هوش مصنوعی کاربردی':      { price: 15000000, emoji: '🤖', gradient: '#065f46,#06b6d4' },
+    'تحلیل داده با پایتون':    { price: 12500000, emoji: '📊', gradient: '#7c3aed,#a78bfa' },
+    'Deep Learning پیشرفته':   { price: 18000000, emoji: '🧠', gradient: '#be185d,#f472b6' },
+    'وب‌اپلیکیشن با Django':   { price: 13500000, emoji: '🌐', gradient: '#92400e,#f59e0b' },
+    'پکیج کامل هوش مصنوعی':    { price: 25000000, emoji: '📦', gradient: '#1e293b,#475569' }
+};
+
+// ---------- cart state (persisted) ----------
+const CART_KEY = 'hr_cart_v1';
+let cart = [];
+try { cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch (e) { cart = []; }
+
+function saveCart() { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+function cartCount() { return cart.reduce((s, i) => s + i.qty, 0); }
+function cartSubtotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
+
+function cartAdd(name, qty = 1) {
+    const meta = CATALOG[name]; if (!meta) return;
+    const ex = cart.find(i => i.name === name);
+    if (ex) ex.qty += qty;
+    else cart.push({ name, price: meta.price, emoji: meta.emoji, gradient: meta.gradient, qty });
+    saveCart(); renderAll();
+}
+function cartSetQty(idx, qty) {
+    if (!cart[idx]) return;
+    cart[idx].qty = qty;
+    if (cart[idx].qty <= 0) cart.splice(idx, 1);
+    saveCart(); renderAll();
+}
+function cartRemove(idx) { cart.splice(idx, 1); saveCart(); renderAll(); }
+function cartClear() { cart = []; saveCart(); renderAll(); }
+
+// ---------- coupons ----------
+const COUPONS = { 'ROOSHAN30': 30, 'PYTHON20': 20, 'AI15': 15 };
+let appliedCoupon = null; // {code, percent}
+
+function couponDiscount() {
+    return appliedCoupon ? Math.round(cartSubtotal() * appliedCoupon.percent / 100) : 0;
+}
+function shippingCost() {
+    if (cart.length === 0) return 0;
+    const afterDiscount = cartSubtotal() - couponDiscount();
+    return afterDiscount >= 20000000 ? 0 : 500000;
+}
+function cartTotal() { return Math.max(0, cartSubtotal() - couponDiscount() + shippingCost()); }
+
+function applyCouponCode(code) {
+    const c = toEnDigits(code).trim().toUpperCase();
+    const msgEl = document.getElementById('couponMsg');
+    if (!c) { if (msgEl) { msgEl.textContent = 'کد تخفیف را وارد کنید'; msgEl.className = 'coupon-msg err'; } return false; }
+    if (COUPONS[c]) {
+        appliedCoupon = { code: c, percent: COUPONS[c] };
+        try { sessionStorage.setItem('hr_coupon', c); } catch (e) {}
+        if (msgEl) { msgEl.textContent = '✓ کد ' + c + ' اعمال شد — ' + faNum(COUPONS[c]) + '٪ تخفیف'; msgEl.className = 'coupon-msg ok'; }
+        toastX('🎉 کد تخفیف ' + faNum(COUPONS[c]) + '٪ اعمال شد', 'ok');
+        renderAll(); return true;
+    }
+    appliedCoupon = null;
+    try { sessionStorage.removeItem('hr_coupon'); } catch (e) {}
+    if (msgEl) { msgEl.textContent = '✗ کد تخفیف نامعتبر است'; msgEl.className = 'coupon-msg err'; }
+    return false;
+}
+(function restoreCoupon() {
+    try {
+        const c = sessionStorage.getItem('hr_coupon');
+        if (c && COUPONS[c]) appliedCoupon = { code: c, percent: COUPONS[c] };
+    } catch (e) {}
+})();
+
+// ---------- orders ----------
+function generateOrder(orderInfo, paymentResult) {
+    const order = {
+        code: 'HR-' + Date.now().toString().slice(-6) + Math.floor(10 + Math.random() * 89),
+        items: JSON.parse(JSON.stringify(cart)),
+        subtotal: cartSubtotal(),
+        discount: couponDiscount(),
+        coupon: appliedCoupon ? appliedCoupon.code : null,
+        shipping: shippingCost(),
+        total: cartTotal(),
+        customer: orderInfo,
+        payment: paymentResult,
+        date: new Date().toISOString(),
+        status: paymentResult.status
+    };
+    try {
+        const orders = JSON.parse(localStorage.getItem('hr_orders') || '[]');
+        orders.push(order);
+        localStorage.setItem('hr_orders', JSON.stringify(orders));
+    } catch (e) {}
+    return order;
+}
+
+// ---------- checkout draft shared across steps/pages ----------
+const DRAFT_KEY = 'hr_checkout_draft';
+function saveDraft(patch) {
+    try {
+        const d = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || '{}');
+        Object.assign(d, patch);
+        sessionStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+    } catch (e) {}
+}
+function readDraft() {
+    try { return JSON.parse(sessionStorage.getItem(DRAFT_KEY) || '{}'); } catch (e) { return {}; }
+}
+function clearDraft() { try { sessionStorage.removeItem(DRAFT_KEY); } catch (e) {} }
+
+// ---------- form validation helpers ----------
+function validateIranMobile(v) { return /^09\d{9}$/.test(onlyDigits(v)); }
+function validateNationalCode(v) {
+    const c = onlyDigits(v);
+    if (c.length !== 10 || /^(\d)\1{9}$/.test(c)) return false;
+    const check = +c[9];
+    let sum = 0;
+    for (let i = 0; i < 9; i++) sum += +c[i] * (10 - i);
+    const r = sum % 11;
+    return r < 2 ? check === r : check === 11 - r;
+}
+function validateEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function validatePostalCode(v) { return /^\d{10}$/.test(onlyDigits(v)); }
+
+function setFieldError(inputEl, hasError, msg) {
+    const g = inputEl.closest('.f-group');
+    if (!g) return;
+    g.classList.toggle('invalid', hasError);
+    const e = g.querySelector('.f-error');
+    if (e && msg) e.textContent = msg;
+}
+
+// ---------- card number (Luhn) ----------
+function validateCardNumber(num) {
+    const digits = onlyDigits(num);
+    if (digits.length !== 16) return false;
+    let sum = 0;
+    for (let i = 0; i < 16; i++) {
+        let d = +digits[i];
+        if (i % 2 === 0) { d *= 2; if (d > 9) d -= 9; }
+        sum += d;
+    }
+    return sum % 10 === 0;
+}
+// Iranian bank detection by BIN prefix
+function detectBank(num) {
+    const bin = onlyDigits(num).slice(0, 4);
+    const banks = {
+        '6037': 'بانک ملی', '5859': 'بانک ملی', '5892': 'سپه', '6219': 'بانک سامان',
+        '6273': 'بانک تجارت', '5858': 'تجارت', '6219 Saman': '', '6280': 'بانک مسکن',
+        '5022': 'بانک پاسارگاد', '6274': 'بانک اقتصاد نوین', '5028': 'بانک شهر',
+        '5042': 'بانک رفاه', '6063': 'بانک ملت', '6104': 'بانک ملت',
+        '9919': 'بانک ملت', '5894': 'بانک سپه', '6276': 'بانک صنعت و معدن',
+        '6037 ب': '', '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
+        '6362': 'بانک آینده', '5058': 'بانک توریسم', '6367': 'بانک آینده',
+        '5029': 'بانک توسعه تعاون', '6064': 'بانک گردشگری', '2071': 'بانک توسعه صادرات'
+    };
+    return banks[bin] || null;
+}
+
+// ---------- cart badge on any page ----------
+function updateNavBadges() {
+    document.querySelectorAll('[data-cart-count]').forEach(el => {
+        el.textContent = faNum(cartCount());
+        el.classList.toggle('hidden', cartCount() === 0);
+    });
+}
+
+// ---------- render hook (pages override window.renderAll) ----------
+function renderAll() {
+    updateNavBadges();
+    if (typeof window.onShopRender === 'function') window.onShopRender();
+}
+
+// initial paint
+document.addEventListener('DOMContentLoaded', renderAll);
+
+// ---------- mini confetti ----------
+function shopConfetti() {
+    const colors = ['#2563eb', '#06b6d4', '#22c55e', '#f59e0b', '#ef4444', '#a78bfa'];
+    for (let i = 0; i < 70; i++) {
+        const c = document.createElement('div');
+        const s = 6 + Math.random() * 8;
+        c.style.cssText = 'position:fixed;top:-12px;left:' + (Math.random() * 100) + 'vw;width:' + s + 'px;height:' + (s * .5) + 'px;background:' + colors[i % colors.length] + ';z-index:10001;pointer-events:none;border-radius:2px;';
+        document.body.appendChild(c);
+        c.animate([
+            { transform: 'translateY(0) rotate(0)', opacity: 1 },
+            { transform: 'translateY(' + innerHeight + 'px) rotate(' + (Math.random() * 720 - 360) + 'deg)', opacity: 0 }
+        ], { duration: 2200 + Math.random() * 1800, easing: 'cubic-bezier(.3,.6,.6,1)' }).onfinish = () => c.remove();
+    }
+}
+
+    </script>
+    <script>
+    let chosenMethod = 'gateway';
+    let infoData = null;
+
+    window.onShopRender = function () {
+        if (cart.length === 0 && !location.hash) { /* allow viewing even when empty (redirect guard below) */ }
+
+        document.getElementById('coSummaryItems').innerHTML = cart.length === 0
+            ? '<p style="color:var(--text-muted);font-size:0.85rem;">سبد خالی است</p>'
+            : cart.map(i =>
+                '<div class="sum-row"><span>' + i.emoji + ' ' + i.name + ' × ' + faNum(i.qty) + '</span><b>' + money(i.price * i.qty) + '</b></div>'
+            ).join('');
+
+        document.getElementById('coSubtotal').textContent = money(cartSubtotal());
+        const dRow = document.getElementById('coDiscountRow');
+        if (appliedCoupon) { dRow.style.display = 'flex'; document.getElementById('coDiscount').textContent = '−' + money(couponDiscount()); }
+        else dRow.style.display = 'none';
+        const ship = shippingCost();
+        document.getElementById('coShipping').textContent = ship === 0 ? 'رایگان 🎁' : money(ship);
+        document.getElementById('coTotal').textContent = money(cartTotal());
+    };
+
+    // empty-cart guard (but allow returning here from gateway cancel or after purchase with #success)
+    (function () {
+        const fromCancel = sessionStorage.getItem('hr_returned_from_gateway');
+        if (cart.length === 0 && !fromCancel && location.hash !== '#success') { location.href = 'cart.html'; }
+    })();
+
+    function showPane(id) {
+        document.querySelectorAll('.co-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // restore draft
+    (function restoreDraft() {
+        const d = readDraft();
+        if (d.name) document.getElementById('fName').value = d.name || '';
+        if (d.phone) document.getElementById('fPhone').value = d.phone || '';
+        if (d.national) document.getElementById('fNational').value = d.national || '';
+        if (d.email) document.getElementById('fEmail').value = d.email || '';
+        if (d.province) document.getElementById('fProvince').value = d.province;
+        if (d.address) document.getElementById('fAddress').value = d.address;
+        if (d.postal) document.getElementById('fPostal').value = d.postal;
+        if (d.shippingMethod) document.getElementById('fShippingMethod').value = d.shippingMethod;
+    })();
+
+    function validateInfo() {
+        let ok = true;
+        const name = document.getElementById('fName');
+        const phone = document.getElementById('fPhone');
+        const national = document.getElementById('fNational');
+        const email = document.getElementById('fEmail');
+        const province = document.getElementById('fProvince');
+        const address = document.getElementById('fAddress');
+        const postal = document.getElementById('fPostal');
+
+        const nameBad = name.value.trim().length < 3;
+        setFieldError(name, nameBad); if (nameBad) ok = false;
+
+        const phoneBad = !validateIranMobile(phone.value);
+        setFieldError(phone, phoneBad); if (phoneBad) ok = false;
+
+        const natBad = !validateNationalCode(national.value);
+        setFieldError(national, natBad); if (natBad) ok = false;
+
+        const emailBad = email.value.trim() !== '' && !validateEmail(email.value);
+        setFieldError(email, emailBad); if (emailBad) ok = false;
+
+        const provBad = !province.value;
+        setFieldError(province, provBad); if (provBad) ok = false;
+
+        const addrBad = address.value.trim().length < 10;
+        setFieldError(address, addrBad, 'آدرس کامل‌تر وارد کنید'); if (addrBad) ok = false;
+
+        const postalBad = postal.value.trim() !== '' && !validatePostalCode(postal.value);
+        setFieldError(postal, postalBad); if (postalBad) ok = false;
+
+        if (!ok) { toastX('لطفا خطاهای فرم را برطرف کنید', 'err'); }
+        return ok;
+    }
+
+    function submitInfo() {
+        if (!validateInfo()) return;
+        infoData = {
+            name: document.getElementById('fName').value.trim(),
+            phone: onlyDigits(document.getElementById('fPhone').value),
+            national: onlyDigits(document.getElementById('fNational').value),
+            email: document.getElementById('fEmail').value.trim(),
+            province: document.getElementById('fProvince').value,
+            address: document.getElementById('fAddress').value.trim(),
+            postal: onlyDigits(document.getElementById('fPostal').value),
+            shippingMethod: document.getElementById('fShippingMethod').value
+        };
+        saveDraft(infoData);
+        showPane('panePay');
+    }
+
+    function selectPay(el) {
+        document.querySelectorAll('.pay-opt').forEach(p => p.classList.remove('selected'));
+        el.classList.add('selected');
+        chosenMethod = el.dataset.method;
+        document.getElementById('noteCard').classList.toggle('show', chosenMethod === 'card');
+        document.getElementById('noteCod').classList.toggle('show', chosenMethod === 'cod');
+    }
+
+    function copyCard() {
+        const num = '6219861023561234';
+        (navigator.clipboard ? navigator.clipboard.writeText(num) : Promise.reject())
+            .then(() => toastX('✓ شماره کارت کپی شد', 'ok'))
+            .catch(() => toastX('شماره کارت: ' + num));
+    }
+
+    function submitPayment() {
+        if (cart.length === 0) { toastX('سبد خرید خالی است', 'err'); return; }
+        if (!infoData) { // user skipped to pay via draft
+            infoData = readDraft();
+            if (!infoData.name) { showPane('paneInfo'); toastX('ابتدا اطلاعات را تکمیل کنید', 'err'); return; }
+        }
+        saveDraft({ paymentMethod: chosenMethod });
+
+        if (chosenMethod === 'gateway') {
+            location.href = 'payment.html';
+        } else {
+            // card-to-card / COD → direct order + show success screen
+            const order = generateOrder(infoData, { method: chosenMethod, status: chosenMethod === 'cod' ? 'در انتظار پرداخت در محل' : 'در انتظار تایید رسید' });
+            cartClear(); clearDraft();
+            try { sessionStorage.setItem('hr_last_order', JSON.stringify(order)); } catch (e) {}
+            showOrderSuccess(order);
+        }
+    }
+
+    // restore info from draft if user comes back
+    (function () {
+        const d = readDraft();
+        if (d.name) infoData = d;
+    })();
+
+    // ===== Order success screen (shared: load-time + direct call) =====
+    function showOrderSuccess(order) {
+        document.querySelectorAll('.co-pane').forEach(p => p.classList.remove('active'));
+        const wrap = document.createElement('div');
+        wrap.className = 'card co-pane active success-wrap';
+        const payLabel = order.payment.method === 'gateway' ? 'درگاه بانکی' : order.payment.method === 'cod' ? 'پرداخت در محل' : 'کارت به کارت';
+        wrap.innerHTML =
+            '<div class="icon">🎉</div>' +
+            '<h2>سفارش شما با موفقیت ثبت شد!</h2>' +
+            '<p>جزئیات سفارش:</p>' +
+            '<div class="receipt">' +
+                '<div class="r-row"><span>کد سفارش</span><b class="tr-code">' + order.code + '</b></div>' +
+                (order.payment.rrn ? '<div class="r-row"><span>کد رهگیری (RRN)</span><b style="direction:ltr;">' + order.payment.rrn + '</b></div>' : '') +
+                '<div class="r-row"><span>مبلغ</span><b>' + money(order.total) + '</b></div>' +
+                '<div class="r-row"><span>اقلام</span><b>' + faNum(order.items.reduce((s, i) => s + i.qty, 0)) + ' قلم</b></div>' +
+                '<div class="r-row"><span>روش پرداخت</span><b>' + payLabel + '</b></div>' +
+                '<div class="r-row"><span>وضعیت</span><b class="ok">✓ ' + order.payment.status + '</b></div>' +
+            '</div>' +
+            '<p>📞 همکاران ما به‌زودی برای هماهنگی ارسال با شما تماس می‌گیرند.</p>' +
+            '<div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;">' +
+                '<a href="index.html" class="btn-x btn-x-primary">بازگشت به فروشگاه ←</a>' +
+                '<button class="btn-x btn-x-ghost" onclick="printReceipt()">🖨 چاپ رسید</button>' +
+            '</div>';
+        document.querySelector('.cart-layout').replaceWith(wrap);
+        document.querySelector('.co-steps').innerHTML =
+            '<div class="co-step done"><span class="n">✓</span> سبد</div>' +
+            '<div class="co-step done"><span class="n">✓</span> اطلاعات</div>' +
+            '<div class="co-step done"><span class="n">✓</span> پرداخت</div>' +
+            '<div class="co-step done active"><span class="n">۴</span> تایید نهایی</div>';
+        document.title = 'سفارش ' + order.code + ' | دکتر هادی روشن';
+        shopConfetti();
+    }
+
+    // success re-show (returning from gateway with #success)
+    if (location.hash === '#success') {
+        try {
+            const order = JSON.parse(sessionStorage.getItem('hr_last_order') || 'null');
+            if (order) showOrderSuccess(order);
+            else location.hash = '';
+        } catch (e) { location.hash = ''; }
+    }
+
+    function printReceipt() {
+        const order = JSON.parse(sessionStorage.getItem('hr_last_order') || 'null');
+        if (!order) return;
+        const w = window.open('', '_blank', 'width=460,height=640');
+        if (!w) { toastX('لطفا popup ها را اجازه دهید', 'err'); return; }
+        const payLabel = order.payment.method === 'gateway' ? 'درگاه بانکی' : order.payment.method === 'cod' ? 'پرداخت در محل' : 'کارت به کارت';
+        w.document.write('<html dir="rtl"><head><meta charset="utf-8"><title>رسید ' + order.code + '</title>' +
+            '<style>body{font-family:Tahoma;padding:25px;}table{width:100%;border-collapse:collapse;}td{padding:6px 0;border-bottom:1px dashed #ccc;font-size:13px;}h2{color:#2563eb;}</style></head><body>' +
+            '<h2>🧾 رسید سفارش ' + order.code + '</h2>' +
+            '<table>' +
+            '<tr><td>خریدار</td><td>' + (order.customer.name || '-') + '</td></tr>' +
+            '<tr><td>موبایل</td><td>' + (order.customer.phone || '-') + '</td></tr>' +
+            '<tr><td>مبلغ</td><td>' + order.total.toLocaleString('fa-IR') + ' تومان</td></tr>' +
+            '<tr><td>روش پرداخت</td><td>' + payLabel + '</td></tr>' +
+            '<tr><td>وضعیت</td><td>' + order.payment.status + '</td></tr>' +
+            '<tr><td>تاریخ</td><td>' + new Date(order.date).toLocaleString('fa-IR') + '</td></tr>' +
+            '</table>' +
+            '<p style="margin-top:20px;font-size:12px;color:#666;">موسسه آموزشی نسیم رامسر — دکتر هادی روشن</p>' +
+            '</body></html>');
+        w.document.close();
+        w.print();
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سبد خرید | دکتر هادی روشن</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="favicon-64x64.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="description" content="سبد خرید دوره‌های آموزشی دکتر هادی روشن — پایتون و هوش مصنوعی">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+/* inlined from shop.css (canonical source kept in shop.css) */
+/* ============================================================
+   Shop Design System — cart / checkout / payment pages
+   Shared with index.html design language (Vazirmatn, blue/cyan)
+   ============================================================ */
+:root {
+    --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #3b82f6;
+    --secondary: #0ea5e9; --accent: #06b6d4; --accent-light: #22d3ee;
+    --dark: #0f172a; --dark-secondary: #1e293b;
+    --gray: #64748b; --gray-light: #94a3b8;
+    --light: #f1f5f9; --lighter: #f8fafc; --white: #ffffff;
+    --gradient-primary: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+    --gradient-hero: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+    --gradient-green: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    --gradient-warm: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+    --radius: 12px; --radius-lg: 20px; --radius-full: 9999px;
+    --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    --bg: var(--lighter); --bg-card: var(--white); --text: var(--dark); --text-muted: var(--gray);
+    --border: rgba(0,0,0,0.06);
+}
+[data-theme="dark"] {
+    --bg: #0f172a; --bg-card: #1e293b; --text: #f1f5f9; --text-muted: #94a3b8;
+    --light: #1e293b; --lighter: #0f172a; --white: #1e293b;
+    --border: rgba(255,255,255,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Vazirmatn','Tahoma',sans-serif; background:var(--bg); color:var(--text); line-height:1.8; direction:rtl; min-height:100vh; transition:background .4s,color .4s; }
+a { text-decoration:none; color:inherit; }
+button { font-family:inherit; }
+input,select,textarea { font-family:inherit; }
+.container { max-width:1100px; margin:0 auto; padding:0 20px; }
+
+/* ===== Shop navbar ===== */
+.shop-nav { background:var(--gradient-hero); padding:14px 0; position:sticky; top:0; z-index:100; box-shadow:0 4px 30px rgba(0,0,0,0.25); }
+.shop-nav .container { display:flex; justify-content:space-between; align-items:center; }
+.shop-logo { display:flex; align-items:center; gap:12px; color:white; font-weight:700; font-size:1.05rem; }
+.shop-logo .icon { width:42px; height:42px; background:var(--gradient-primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; overflow:hidden; }
+        .shop-logo .icon img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
+.shop-steps { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,0.55); font-size:0.8rem; font-weight:600; flex-wrap:wrap; }
+.shop-steps .s { display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:var(--radius-full); transition:var(--transition); white-space:nowrap; }
+.shop-steps .s.done { color:#22c55e; }
+.shop-steps .s.active { background:rgba(37,99,235,0.35); color:white; }
+.shop-steps .sep { opacity:0.4; }
+@media (max-width:640px){ .shop-steps .s span.lbl { display:none; } .shop-steps .s.active span.lbl{display:inline;} }
+
+/* ===== Page & cards ===== */
+.shop-main { padding:40px 0 80px; }
+.page-title { font-size:1.7rem; font-weight:800; margin-bottom:6px; }
+.page-sub { color:var(--text-muted); font-size:0.95rem; margin-bottom:30px; }
+.card { background:var(--bg-card); border-radius:var(--radius-lg); border:1px solid var(--border); box-shadow:var(--shadow-lg); padding:25px; }
+
+/* ===== Cart layout ===== */
+.cart-layout { display:grid; grid-template-columns:1.6fr 1fr; gap:25px; align-items:start; }
+@media (max-width:900px){ .cart-layout { grid-template-columns:1fr; } }
+
+/* Cart items */
+.cart-page-item { display:flex; gap:16px; padding:18px 0; border-bottom:1px solid var(--border); align-items:center; }
+.cart-page-item:last-child { border-bottom:none; }
+.cart-page-img { width:74px; height:74px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:2rem; flex-shrink:0; }
+.cart-page-info { flex:1; min-width:0; }
+.cart-page-name { font-weight:700; font-size:1rem; margin-bottom:2px; }
+.cart-page-price { color:var(--primary); font-weight:700; font-size:0.9rem; }
+.qty-box { display:inline-flex; align-items:center; gap:10px; margin-top:10px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-full); padding:4px; }
+.qty-box button { width:30px; height:30px; border-radius:50%; border:none; background:var(--bg-card); cursor:pointer; font-size:1rem; font-weight:700; color:var(--text); transition:var(--transition); box-shadow:var(--shadow-sm); }
+.qty-box button:hover { background:var(--primary); color:white; }
+.qty-box .q { min-width:24px; text-align:center; font-weight:700; font-size:0.95rem; }
+.cart-page-line { font-weight:800; color:var(--primary); white-space:nowrap; font-size:0.95rem; }
+.cart-page-remove { width:34px; height:34px; border-radius:10px; border:none; background:rgba(239,68,68,0.08); color:#ef4444; cursor:pointer; font-size:1rem; transition:var(--transition); flex-shrink:0; }
+.cart-page-remove:hover { background:#ef4444; color:white; }
+
+.cart-empty-page { text-align:center; padding:70px 20px; color:var(--text-muted); }
+.cart-empty-page .big { font-size:4.5rem; margin-bottom:15px; opacity:0.35; }
+.cart-empty-page h3 { color:var(--text); margin-bottom:8px; }
+
+/* Summary */
+.summary-title { font-size:1.1rem; font-weight:800; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+.sum-row { display:flex; justify-content:space-between; padding:9px 0; font-size:0.92rem; color:var(--text-muted); }
+.sum-row b { color:var(--text); }
+.sum-row.total { border-top:2px solid var(--border); margin-top:8px; padding-top:14px; font-size:1.05rem; }
+.sum-row.total b { color:var(--primary); font-size:1.25rem; font-weight:800; }
+.sum-row.discount b { color:#22c55e; }
+.coupon-row { display:flex; gap:8px; margin:14px 0; }
+.coupon-row input { flex:1; padding:11px 16px; border:2px solid var(--border); border-radius:var(--radius); background:var(--bg); color:var(--text); font-size:0.9rem; transition:var(--transition); }
+.coupon-row input:focus { outline:none; border-color:var(--primary); }
+.coupon-row button { padding:11px 18px; background:var(--dark-secondary); color:white; border:none; border-radius:var(--radius); font-weight:600; font-size:0.85rem; cursor:pointer; transition:var(--transition); }
+.coupon-row button:hover { background:var(--primary); }
+.coupon-msg { font-size:0.78rem; margin-top:-6px; margin-bottom:10px; min-height:18px; }
+.coupon-msg.ok { color:#22c55e; }
+.coupon-msg.err { color:#ef4444; }
+
+/* ===== Buttons ===== */
+.btn-x { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:14px 30px; border-radius:var(--radius-full); font-size:0.95rem; font-weight:700; cursor:pointer; border:none; transition:var(--transition); }
+.btn-x-primary { background:var(--gradient-primary); color:white; box-shadow:0 4px 18px rgba(37,99,235,0.35); }
+.btn-x-primary:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(37,99,235,0.45); }
+.btn-x-green { background:var(--gradient-green); color:white; box-shadow:0 4px 18px rgba(5,150,105,0.35); }
+.btn-x-green:hover { transform:translateY(-2px); }
+.btn-x-ghost { background:transparent; color:var(--text-muted); border:2px solid var(--border); }
+.btn-x-ghost:hover { border-color:var(--primary); color:var(--primary); }
+.btn-x-block { width:100%; }
+.btn-x:disabled { opacity:0.5; cursor:not-allowed; transform:none !important; }
+
+/* ===== Forms ===== */
+.f-group { margin-bottom:16px; }
+.f-group label { display:block; font-size:0.85rem; font-weight:600; margin-bottom:7px; }
+.f-group label .req { color:#ef4444; }
+.f-group input, .f-group select, .f-group textarea { width:100%; padding:13px 16px; border:2px solid var(--border); border-radius:var(--radius); background:var(--bg); color:var(--text); font-size:0.95rem; transition:var(--transition); }
+.f-group input:focus, .f-group select:focus, .f-group textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,0.1); }
+.f-group input.ltr { direction:ltr; text-align:left; }
+.f-error { color:#ef4444; font-size:0.75rem; margin-top:5px; display:none; }
+.f-group.invalid input { border-color:#ef4444; }
+.f-group.invalid .f-error { display:block; }
+.f-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+@media (max-width:560px){ .f-row { grid-template-columns:1fr; } }
+
+/* ===== Checkout steps ===== */
+.co-steps { display:flex; gap:8px; margin-bottom:28px; }
+.co-step { flex:1; text-align:center; padding:12px 6px; border-radius:var(--radius); background:var(--bg-card); border:1px solid var(--border); font-size:0.8rem; font-weight:700; color:var(--text-muted); transition:var(--transition); position:relative; }
+.co-step .n { display:inline-flex; width:24px; height:24px; border-radius:50%; background:var(--border); color:var(--text-muted); align-items:center; justify-content:center; font-size:0.75rem; margin-left:6px; transition:var(--transition); }
+.co-step.active { border-color:var(--primary); color:var(--primary); background:rgba(37,99,235,0.06); }
+.co-step.active .n { background:var(--primary); color:white; }
+.co-step.done { border-color:#22c55e; color:#22c55e; }
+.co-step.done .n { background:#22c55e; color:white; }
+.co-pane { display:none; animation:paneIn .4s cubic-bezier(0.4,0,0.2,1); }
+.co-pane.active { display:block; }
+@keyframes paneIn { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+.co-actions { display:flex; gap:10px; margin-top:22px; flex-wrap:wrap; }
+.co-actions .btn-x { flex:1; min-width:180px; }
+
+/* Payment methods */
+.pay-grid { display:grid; gap:12px; }
+.pay-opt { display:flex; align-items:center; gap:14px; padding:16px 18px; border:2px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:var(--transition); }
+.pay-opt:hover { border-color:var(--primary-light); }
+.pay-opt.selected { border-color:var(--primary); background:rgba(37,99,235,0.05); }
+.pay-opt .radio { width:20px; height:20px; border:2px solid var(--gray-light); border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:var(--transition); }
+.pay-opt.selected .radio { border-color:var(--primary); }
+.pay-opt.selected .radio::after { content:''; width:11px; height:11px; border-radius:50%; background:var(--primary); }
+.pay-opt .ic { font-size:1.5rem; }
+.pay-opt h4 { font-size:0.95rem; }
+.pay-opt p { font-size:0.78rem; color:var(--text-muted); }
+.pay-note { display:none; margin-top:14px; background:var(--bg); border-radius:var(--radius); padding:16px; font-size:0.85rem; color:var(--text-muted); }
+.pay-note.show { display:block; animation:paneIn .3s; }
+.pay-note .cardnum { font-size:1.05rem; font-weight:800; direction:ltr; text-align:center; letter-spacing:2px; margin:8px 0; color:var(--text); }
+.pay-note .copy-btn { display:block; margin:8px auto 0; padding:6px 18px; font-size:0.78rem; border:none; border-radius:var(--radius-full); background:var(--primary); color:white; cursor:pointer; }
+
+/* ===== Success ===== */
+.success-wrap { text-align:center; padding:30px 10px; }
+.success-wrap .icon { font-size:4.5rem; margin-bottom:10px; animation:popIn .6s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from{transform:scale(0);} to{transform:scale(1);} }
+.success-wrap h2 { color:#22c55e; margin-bottom:8px; }
+.success-wrap p { color:var(--text-muted); }
+.receipt { max-width:430px; margin:25px auto; background:var(--bg); border-radius:var(--radius-lg); padding:22px; text-align:right; }
+.receipt .r-row { display:flex; justify-content:space-between; padding:7px 0; font-size:0.88rem; color:var(--text-muted); border-bottom:1px dashed var(--border); }
+.receipt .r-row:last-child { border-bottom:none; }
+.receipt .r-row b { color:var(--text); }
+.receipt .r-row .ok { color:#22c55e; font-weight:800; }
+.tr-code { font-size:1.1rem; font-weight:800; letter-spacing:1px; direction:ltr; color:var(--primary); }
+
+/* ===== Gateway (payment.html) ===== */
+.gateway-bg { min-height:100vh; background:var(--gradient-hero); display:flex; align-items:center; justify-content:center; padding:20px; }
+.gateway { width:430px; max-width:100%; background:var(--bg-card); border-radius:var(--radius-lg); box-shadow:0 30px 80px rgba(0,0,0,0.5); overflow:hidden; animation:gwIn .5s cubic-bezier(0.34,1.3,0.64,1); }
+@keyframes gwIn { from{opacity:0;transform:translateY(30px) scale(0.96);} to{opacity:1;transform:scale(1);} }
+.gw-head { background:var(--gradient-primary); color:white; padding:18px 25px; display:flex; justify-content:space-between; align-items:center; }
+.gw-head .bank { display:flex; align-items:center; gap:10px; font-weight:800; }
+.gw-head .bank .logo { width:38px; height:38px; background:rgba(255,255,255,0.2); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; }
+.gw-head .secure { display:flex; align-items:center; gap:6px; font-size:0.72rem; background:rgba(255,255,255,0.15); padding:5px 12px; border-radius:var(--radius-full); }
+.gw-timer { background:#fef3c7; color:#92400e; text-align:center; font-size:0.8rem; font-weight:700; padding:8px; }
+.gw-timer b { font-size:0.95rem; }
+.gw-body { padding:25px; }
+.gw-merchant { display:flex; justify-content:space-between; align-items:center; background:var(--bg); border-radius:var(--radius); padding:14px 18px; margin-bottom:20px; font-size:0.85rem; }
+.gw-merchant b { font-size:0.95rem; }
+.gw-amount { text-align:center; margin-bottom:22px; }
+.gw-amount .lbl { color:var(--text-muted); font-size:0.8rem; }
+.gw-amount .val { font-size:2rem; font-weight:900; color:var(--primary); }
+.gw-amount .cur { font-size:0.85rem; color:var(--text-muted); }
+.gw-fields label { display:block; font-size:0.8rem; font-weight:600; margin-bottom:6px; color:var(--text-muted); }
+.gw-cardnum-wrap { position:relative; margin-bottom:14px; }
+.gw-cardnum { width:100%; padding:14px 16px; border:2px solid var(--border); border-radius:var(--radius); font-size:1.15rem; font-weight:700; letter-spacing:3px; direction:ltr; text-align:center; transition:var(--transition); background:var(--bg); color:var(--text); }
+.gw-cardnum:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(37,99,235,0.12); }
+.gw-cardnum.valid { border-color:#22c55e; }
+.gw-cardnum.invalid { border-color:#ef4444; }
+.gw-card-type { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:0.7rem; font-weight:800; color:var(--gray-light); }
+.gw-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+.gw-row input { width:100%; padding:13px 14px; border:2px solid var(--border); border-radius:var(--radius); font-size:0.95rem; direction:ltr; text-align:center; font-weight:700; background:var(--bg); color:var(--text); transition:var(--transition); }
+.gw-row input:focus { outline:none; border-color:var(--primary); }
+.gw-cvv-wrap { position:relative; }
+.gw-cvv-hint { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:1rem; opacity:0.5; cursor:help; }
+.gw-pin-row { display:flex; gap:8px; justify-content:center; direction:ltr; margin:6px 0 16px; }
+.gw-pin { width:48px; height:56px; text-align:center; font-size:1.4rem; font-weight:800; border:2px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); transition:var(--transition); }
+.gw-pin:focus { outline:none; border-color:var(--primary); transform:scale(1.05); }
+.gw-pin.filled { border-color:var(--primary-light); }
+.captcha-row { display:flex; gap:10px; align-items:center; margin-bottom:18px; }
+.captcha-code { background:repeating-linear-gradient(45deg,var(--bg),var(--bg) 4px,var(--border) 4px,var(--border) 8px); border:2px solid var(--border); border-radius:var(--radius); padding:10px 18px; font-size:1.2rem; font-weight:900; letter-spacing:5px; direction:ltr; user-select:none; font-style:italic; color:var(--dark); }
+[data-theme="dark"] .captcha-code { color:var(--text); }
+.captcha-row input { flex:1; padding:12px 14px; border:2px solid var(--border); border-radius:var(--radius); font-size:0.95rem; background:var(--bg); color:var(--text); }
+.captcha-row input:focus { outline:none; border-color:var(--primary); }
+.captcha-refresh { width:42px; height:42px; border:2px solid var(--border); background:var(--bg); border-radius:var(--radius); cursor:pointer; font-size:1rem; transition:var(--transition); flex-shrink:0; }
+.captcha-refresh:hover { border-color:var(--primary); transform:rotate(180deg); }
+.gw-submit { width:100%; padding:15px; background:var(--gradient-green); color:white; border:none; border-radius:var(--radius); font-size:1rem; font-weight:800; cursor:pointer; transition:var(--transition); display:flex; align-items:center; justify-content:center; gap:8px; }
+.gw-submit:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(5,150,105,0.4); }
+.gw-cancel { width:100%; margin-top:10px; padding:12px; background:transparent; border:2px solid var(--border); color:var(--text-muted); border-radius:var(--radius); font-size:0.9rem; font-weight:600; cursor:pointer; transition:var(--transition); }
+.gw-cancel:hover { border-color:#ef4444; color:#ef4444; }
+.gw-foot { text-align:center; font-size:0.7rem; color:var(--gray-light); padding:0 25px 20px; }
+
+/* Processing overlay */
+.gw-processing { position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; opacity:0; visibility:hidden; transition:var(--transition); color:white; }
+.gw-processing.show { opacity:1; visibility:visible; }
+.gw-processing .ring { width:70px; height:70px; border:4px solid rgba(255,255,255,0.15); border-top-color:var(--accent-light); border-radius:50%; animation:spin 0.9s linear infinite; margin-bottom:20px; }
+.gw-processing .msg { font-size:1rem; font-weight:600; }
+@keyframes spin { to{transform:rotate(360deg);} }
+
+/* OTP step inside gateway */
+.gw-otp-inputs { display:flex; gap:8px; justify-content:center; direction:ltr; margin:15px 0 5px; }
+.gw-otp-inputs input { width:44px; height:52px; text-align:center; font-size:1.3rem; font-weight:800; border:2px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); transition:var(--transition); }
+.gw-otp-inputs input:focus { outline:none; border-color:var(--primary); }
+.gw-hint { text-align:center; font-size:0.78rem; color:var(--text-muted); margin-bottom:10px; }
+.gw-hint b { color:var(--primary); direction:ltr; display:inline-block; }
+
+/* Result screens */
+.gw-result { text-align:center; padding:20px 0; display:none; }
+.gw-result.show { display:block; animation:paneIn .4s; }
+.gw-result .icon { font-size:4rem; margin-bottom:12px; }
+.gw-result h3 { font-size:1.2rem; margin-bottom:6px; }
+.gw-result.fail h3 { color:#ef4444; }
+.gw-result.ok h3 { color:#22c55e; }
+.gw-result p { color:var(--text-muted); font-size:0.88rem; }
+
+/* Toast (shared) */
+.toast-x { position:fixed; bottom:25px; right:50%; transform:translateX(50%) translateY(20px); background:var(--dark-secondary); color:white; padding:13px 26px; border-radius:var(--radius-full); font-size:0.88rem; font-weight:600; z-index:9999; opacity:0; visibility:hidden; transition:all .35s cubic-bezier(0.4,0,0.2,1); box-shadow:0 10px 35px rgba(0,0,0,0.35); }
+.toast-x.show { opacity:1; visibility:visible; transform:translateX(50%) translateY(0); }
+.toast-x.ok { background:var(--gradient-green); }
+.toast-x.err { background:linear-gradient(135deg,#ef4444,#f97316); }
+
+/* Footer */
+.shop-foot { text-align:center; padding:25px; color:var(--text-muted); font-size:0.8rem; border-top:1px solid var(--border); }
+.shop-foot a { color:var(--primary); font-weight:600; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="shop-nav">
+        <div class="container">
+            <a href="index.html" class="shop-logo">
+                <span class="icon"><img src="profile.png" alt="دکتر هادی روشن"></span>
+                <span>دکتر هادی روشن</span>
+            </a>
+            <div class="shop-steps">
+                <div class="s active">🛒 <span class="lbl">سبد خرید</span></div>
+                <span class="sep">←</span>
+                <div class="s">📝 <span class="lbl">تسویه حساب</span></div>
+                <span class="sep">←</span>
+                <div class="s">💳 <span class="lbl">پرداخت</span></div>
+            </div>
+            <button class="btn-x-ghost btn-x" style="padding:8px 16px;font-size:0.8rem;" onclick="toggleThemeX()" data-theme-icon>🌙</button>
+        </div>
+    </nav>
+
+    <main class="shop-main container">
+        <h1 class="page-title">🛒 سبد خرید شما</h1>
+        <p class="page-sub">اقلام انتخابی خود را بررسی و تعداد آن‌ها را تنظیم کنید</p>
+
+        <div class="cart-layout">
+            <!-- items -->
+            <div class="card" id="itemsCard">
+                <div id="cartList"></div>
+            </div>
+
+            <!-- summary -->
+            <div>
+                <div class="card">
+                    <div class="summary-title">🧾 خلاصه سفارش</div>
+
+                    <div class="coupon-row">
+                        <input type="text" id="couponInput" placeholder="کد تخفیف (مثلا ROOSHAN30)">
+                        <button onclick="applyCoupon()">اعمال</button>
+                    </div>
+                    <div class="coupon-msg" id="couponMsg"></div>
+
+                    <div class="sum-row"><span>تعداد اقلام</span><b id="sumCount">۰</b></div>
+                    <div class="sum-row"><span>جمع کل</span><b id="sumSubtotal">۰ تومان</b></div>
+                    <div class="sum-row discount" id="sumDiscountRow" style="display:none;"><span>تخفیف</span><b id="sumDiscount">۰ تومان</b></div>
+                    <div class="sum-row"><span>هزینه ارسال</span><b id="sumShipping">۰ تومان</b></div>
+                    <div class="sum-row total"><span>مبلغ قابل پرداخت</span><b id="sumTotal">۰ تومان</b></div>
+
+                    <button class="btn-x btn-x-primary btn-x-block" style="margin-top:18px;" id="goCheckoutBtn" onclick="goCheckout()">
+                        ادامه و تسویه حساب ←
+                    </button>
+                    <a href="index.html#products" class="btn-x btn-x-ghost btn-x-block" style="margin-top:10px;">ادامه خرید</a>
+
+                    <p style="font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:14px;">
+                        🔒 پرداخت امن | 🎁 ارسال رایگان بالای ۲۰ میلیون تومان
+                    </p>
+                </div>
+
+                <div class="card" style="margin-top:15px;font-size:0.8rem;color:var(--text-muted);">
+                    💡 <b>کدهای تخفیف فعال:</b><br>
+                    <span style="direction:ltr;display:inline-block;">ROOSHAN30</span> (۳۰٪) |
+                    <span style="direction:ltr;display:inline-block;">PYTHON20</span> (۲۰٪) |
+                    <span style="direction:ltr;display:inline-block;">AI15</span> (۱۵٪)
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="shop-foot container">
+        <a href="index.html">بازگشت به سایت اصلی</a> | © ۱۴۰۵ دکتر هادی روشن
+    </footer>
+
+    <script>
+/* inlined from shop.js (canonical source kept in shop.js) */
+/* ============================================================
+   Shared shop engine — cart state, coupons, orders, checkout,
+   simulated payment gateway, theme, toasts.
+   Used by cart.html, checkout.html, payment.html
+   ============================================================ */
+
+// ---------- utilities ----------
+const faNum = n => Number(n).toLocaleString('fa-IR');
+const money = n => faNum(n) + ' تومان';
+const toEnDigits = s => String(s)
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const onlyDigits = s => toEnDigits(s).replace(/[^0-9]/g, '');
+
+function toastX(msg, type = '') {
+    let t = document.getElementById('toastX');
+    if (!t) { t = document.createElement('div'); t.id = 'toastX'; t.className = 'toast-x'; document.body.appendChild(t); }
+    t.textContent = msg;
+    t.className = 'toast-x show ' + type;
+    clearTimeout(t._h);
+    t._h = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ---------- theme ----------
+(function initTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+})();
+function toggleThemeX() {
+    const el = document.documentElement;
+    const dark = el.getAttribute('data-theme') === 'dark';
+    if (dark) { el.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+    else { el.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+    document.querySelectorAll('[data-theme-icon]').forEach(b => b.textContent = dark ? '🌙' : '☀️');
+}
+
+// ---------- catalog (single source of truth, shared with index.html) ----------
+const CATALOG = {
+    'دوره جامع پایتون':        { price: 12000000, emoji: '🐍', gradient: '#1e3a5f,#2563eb' },
+    'هوش مصنوعی کاربردی':      { price: 15000000, emoji: '🤖', gradient: '#065f46,#06b6d4' },
+    'تحلیل داده با پایتون':    { price: 12500000, emoji: '📊', gradient: '#7c3aed,#a78bfa' },
+    'Deep Learning پیشرفته':   { price: 18000000, emoji: '🧠', gradient: '#be185d,#f472b6' },
+    'وب‌اپلیکیشن با Django':   { price: 13500000, emoji: '🌐', gradient: '#92400e,#f59e0b' },
+    'پکیج کامل هوش مصنوعی':    { price: 25000000, emoji: '📦', gradient: '#1e293b,#475569' }
+};
+
+// ---------- cart state (persisted) ----------
+const CART_KEY = 'hr_cart_v1';
+let cart = [];
+try { cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]'); } catch (e) { cart = []; }
+
+function saveCart() { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+function cartCount() { return cart.reduce((s, i) => s + i.qty, 0); }
+function cartSubtotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
+
+function cartAdd(name, qty = 1) {
+    const meta = CATALOG[name]; if (!meta) return;
+    const ex = cart.find(i => i.name === name);
+    if (ex) ex.qty += qty;
+    else cart.push({ name, price: meta.price, emoji: meta.emoji, gradient: meta.gradient, qty });
+    saveCart(); renderAll();
+}
+function cartSetQty(idx, qty) {
+    if (!cart[idx]) return;
+    cart[idx].qty = qty;
+    if (cart[idx].qty <= 0) cart.splice(idx, 1);
+    saveCart(); renderAll();
+}
+function cartRemove(idx) { cart.splice(idx, 1); saveCart(); renderAll(); }
+function cartClear() { cart = []; saveCart(); renderAll(); }
+
+// ---------- coupons ----------
+const COUPONS = { 'ROOSHAN30': 30, 'PYTHON20': 20, 'AI15': 15 };
+let appliedCoupon = null; // {code, percent}
+
+function couponDiscount() {
+    return appliedCoupon ? Math.round(cartSubtotal() * appliedCoupon.percent / 100) : 0;
+}
+function shippingCost() {
+    if (cart.length === 0) return 0;
+    const afterDiscount = cartSubtotal() - couponDiscount();
+    return afterDiscount >= 20000000 ? 0 : 500000;
+}
+function cartTotal() { return Math.max(0, cartSubtotal() - couponDiscount() + shippingCost()); }
+
+function applyCouponCode(code) {
+    const c = toEnDigits(code).trim().toUpperCase();
+    const msgEl = document.getElementById('couponMsg');
+    if (!c) { if (msgEl) { msgEl.textContent = 'کد تخفیف را وارد کنید'; msgEl.className = 'coupon-msg err'; } return false; }
+    if (COUPONS[c]) {
+        appliedCoupon = { code: c, percent: COUPONS[c] };
+        try { sessionStorage.setItem('hr_coupon', c); } catch (e) {}
+        if (msgEl) { msgEl.textContent = '✓ کد ' + c + ' اعمال شد — ' + faNum(COUPONS[c]) + '٪ تخفیف'; msgEl.className = 'coupon-msg ok'; }
+        toastX('🎉 کد تخفیف ' + faNum(COUPONS[c]) + '٪ اعمال شد', 'ok');
+        renderAll(); return true;
+    }
+    appliedCoupon = null;
+    try { sessionStorage.removeItem('hr_coupon'); } catch (e) {}
+    if (msgEl) { msgEl.textContent = '✗ کد تخفیف نامعتبر است'; msgEl.className = 'coupon-msg err'; }
+    return false;
+}
+(function restoreCoupon() {
+    try {
+        const c = sessionStorage.getItem('hr_coupon');
+        if (c && COUPONS[c]) appliedCoupon = { code: c, percent: COUPONS[c] };
+    } catch (e) {}
+})();
+
+// ---------- orders ----------
+function generateOrder(orderInfo, paymentResult) {
+    const order = {
+        code: 'HR-' + Date.now().toString().slice(-6) + Math.floor(10 + Math.random() * 89),
+        items: JSON.parse(JSON.stringify(cart)),
+        subtotal: cartSubtotal(),
+        discount: couponDiscount(),
+        coupon: appliedCoupon ? appliedCoupon.code : null,
+        shipping: shippingCost(),
+        total: cartTotal(),
+        customer: orderInfo,
+        payment: paymentResult,
+        date: new Date().toISOString(),
+        status: paymentResult.status
+    };
+    try {
+        const orders = JSON.parse(localStorage.getItem('hr_orders') || '[]');
+        orders.push(order);
+        localStorage.setItem('hr_orders', JSON.stringify(orders));
+    } catch (e) {}
+    return order;
+}
+
+// ---------- checkout draft shared across steps/pages ----------
+const DRAFT_KEY = 'hr_checkout_draft';
+function saveDraft(patch) {
+    try {
+        const d = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || '{}');
+        Object.assign(d, patch);
+        sessionStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+    } catch (e) {}
+}
+function readDraft() {
+    try { return JSON.parse(sessionStorage.getItem(DRAFT_KEY) || '{}'); } catch (e) { return {}; }
+}
+function clearDraft() { try { sessionStorage.removeItem(DRAFT_KEY); } catch (e) {} }
+
+// ---------- form validation helpers ----------
+function validateIranMobile(v) { return /^09\d{9}$/.test(onlyDigits(v)); }
+function validateNationalCode(v) {
+    const c = onlyDigits(v);
+    if (c.length !== 10 || /^(\d)\1{9}$/.test(c)) return false;
+    const check = +c[9];
+    let sum = 0;
+    for (let i = 0; i < 9; i++) sum += +c[i] * (10 - i);
+    const r = sum % 11;
+    return r < 2 ? check === r : check === 11 - r;
+}
+function validateEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function validatePostalCode(v) { return /^\d{10}$/.test(onlyDigits(v)); }
+
+function setFieldError(inputEl, hasError, msg) {
+    const g = inputEl.closest('.f-group');
+    if (!g) return;
+    g.classList.toggle('invalid', hasError);
+    const e = g.querySelector('.f-error');
+    if (e && msg) e.textContent = msg;
+}
+
+// ---------- card number (Luhn) ----------
+function validateCardNumber(num) {
+    const digits = onlyDigits(num);
+    if (digits.length !== 16) return false;
+    let sum = 0;
+    for (let i = 0; i < 16; i++) {
+        let d = +digits[i];
+        if (i % 2 === 0) { d *= 2; if (d > 9) d -= 9; }
+        sum += d;
+    }
+    return sum % 10 === 0;
+}
+// Iranian bank detection by BIN prefix
+function detectBank(num) {
+    const bin = onlyDigits(num).slice(0, 4);
+    const banks = {
+        '6037': 'بانک ملی', '5859': 'بانک ملی', '5892': 'سپه', '6219': 'بانک سامان',
+        '6273': 'بانک تجارت', '5858': 'تجارت', '6219 Saman': '', '6280': 'بانک مسکن',
+        '5022': 'بانک پاسارگاد', '6274': 'بانک اقتصاد نوین', '5028': 'بانک شهر',
+        '5042': 'بانک رفاه', '6063': 'بانک ملت', '6104': 'بانک ملت',
+        '9919': 'بانک ملت', '5894': 'بانک سپه', '6276': 'بانک صنعت و معدن',
+        '6037 ب': '', '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
+        '6362': 'بانک آینده', '5058': 'بانک توریسم', '6367': 'بانک آینده',
+        '5029': 'بانک توسعه تعاون', '6064': 'بانک گردشگری', '2071': 'بانک توسعه صادرات'
+    };
+    return banks[bin] || null;
+}
+
+// ---------- cart badge on any page ----------
+function updateNavBadges() {
+    document.querySelectorAll('[data-cart-count]').forEach(el => {
+        el.textContent = faNum(cartCount());
+        el.classList.toggle('hidden', cartCount() === 0);
+    });
+}
+
+// ---------- render hook (pages override window.renderAll) ----------
+function renderAll() {
+    updateNavBadges();
+    if (typeof window.onShopRender === 'function') window.onShopRender();
+}
+
+// initial paint
+document.addEventListener('DOMContentLoaded', renderAll);
+
+// ---------- mini confetti ----------
+function shopConfetti() {
+    const colors = ['#2563eb', '#06b6d4', '#22c55e', '#f59e0b', '#ef4444', '#a78bfa'];
+    for (let i = 0; i < 70; i++) {
+        const c = document.createElement('div');
+        const s = 6 + Math.random() * 8;
+        c.style.cssText = 'position:fixed;top:-12px;left:' + (Math.random() * 100) + 'vw;width:' + s + 'px;height:' + (s * .5) + 'px;background:' + colors[i % colors.length] + ';z-index:10001;pointer-events:none;border-radius:2px;';
+        document.body.appendChild(c);
+        c.animate([
+            { transform: 'translateY(0) rotate(0)', opacity: 1 },
+            { transform: 'translateY(' + innerHeight + 'px) rotate(' + (Math.random() * 720 - 360) + 'deg)', opacity: 0 }
+        ], { duration: 2200 + Math.random() * 1800, easing: 'cubic-bezier(.3,.6,.6,1)' }).onfinish = () => c.remove();
+    }
+}
+
+    </script>
+    <script>
+    window.onShopRender = function () {
+        const list = document.getElementById('cartList');
+        const itemsCard = document.getElementById('itemsCard');
+
+        if (cart.length === 0) {
+            itemsCard.innerHTML = '<div class="cart-empty-page"><div class="big">🛒</div><h3>سبد خرید شما خالی است</h3><p>هنوز دوره‌ای انتخاب نکرده‌اید</p><a href="index.html#products" class="btn-x btn-x-primary" style="margin-top:20px;">مشاهده دوره‌ها ←</a></div>';
+        } else {
+            itemsCard.innerHTML = '<div class="summary-title">📦 اقلام سبد (' + faNum(cartCount()) + ')</div>' + cart.map((item, i) =>
+                '<div class="cart-page-item">' +
+                    '<div class="cart-page-img" style="background:linear-gradient(135deg,' + item.gradient + ');">' + item.emoji + '</div>' +
+                    '<div class="cart-page-info">' +
+                        '<div class="cart-page-name">' + item.name + '</div>' +
+                        '<div class="cart-page-price">' + money(item.price) + '</div>' +
+                        '<div class="qty-box">' +
+                            '<button onclick="cartSetQty(' + i + ',' + (item.qty - 1) + ')">−</button>' +
+                            '<span class="q">' + faNum(item.qty) + '</span>' +
+                            '<button onclick="cartSetQty(' + i + ',' + (item.qty + 1) + ')">+</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="cart-page-line">' + money(item.price * item.qty) + '</div>' +
+                    '<button class="cart-page-remove" onclick="cartRemove(' + i + ')" title="حذف">🗑️</button>' +
+                '</div>'
+            ).join('');
+        }
+
+        document.getElementById('sumCount').textContent = faNum(cartCount());
+        document.getElementById('sumSubtotal').textContent = money(cartSubtotal());
+        const dRow = document.getElementById('sumDiscountRow');
+        if (appliedCoupon) { dRow.style.display = 'flex'; document.getElementById('sumDiscount').textContent = '−' + money(couponDiscount()); }
+        else dRow.style.display = 'none';
+        const ship = shippingCost();
+        document.getElementById('sumShipping').textContent = ship === 0 ? 'رایگان 🎁' : money(ship);
+        document.getElementById('sumTotal').textContent = money(cartTotal());
+        document.getElementById('goCheckoutBtn').disabled = cart.length === 0;
+    };
+
+    function applyCoupon() {
+        applyCouponCode(document.getElementById('couponInput').value);
+    }
+
+    function goCheckout() {
+        if (cart.length === 0) { toastX('سبد خرید خالی است', 'err'); return; }
+        location.href = 'checkout.html';
+    }
+
+    // Enter key on coupon input
+    document.getElementById('couponInput').addEventListener('keydown', e => { if (e.key === 'Enter') applyCoupon(); });
+    </script>
+</body>
+</html>
