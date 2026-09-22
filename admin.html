@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت سفارش‌ها | دکتر هادی روشن</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="favicon-64x64.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb; --primary-dark: #1d4ed8; --secondary: #0ea5e9; --accent: #06b6d4;
+            --dark: #0f172a; --dark-secondary: #1e293b;
+            --gray: #64748b; --gray-light: #94a3b8;
+            --light: #f1f5f9; --lighter: #f8fafc; --white: #ffffff;
+            --gradient-primary: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.25);
+        }
+        [data-theme="dark"] {
+            --light: #0f172a; --lighter: #1e293b; --white: #1e293b;
+            --dark: #f8fafc; --dark-secondary: #cbd5e1;
+            --gray: #94a3b8; --gray-light: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Vazirmatn', Tahoma, sans-serif;
+            background: var(--light); color: var(--dark);
+            min-height: 100vh; padding: 20px;
+            transition: background .3s, color .3s;
+        }
+        .wrap { max-width: 1200px; margin: 0 auto; }
+
+        /* topbar */
+        .topbar {
+            display: flex; align-items: center; gap: 14px;
+            background: var(--white); border-radius: 18px; padding: 16px 22px;
+            box-shadow: var(--shadow); margin-bottom: 22px;
+        }
+        .topbar img {
+            width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+        .topbar h1 { font-size: 1.15rem; font-weight: 800; }
+        .topbar .sub { font-size: .78rem; color: var(--gray); }
+        .topbar .spacer { flex: 1; }
+        .btn {
+            font-family: inherit; cursor: pointer; border: none; border-radius: 12px;
+            padding: 10px 18px; font-size: .85rem; font-weight: 700;
+            background: var(--gradient-primary); color: #fff;
+            transition: transform .15s, box-shadow .15s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,.35); }
+        .btn.ghost {
+            background: transparent; color: var(--dark);
+            border: 1.5px solid var(--gray-light);
+        }
+        .btn.danger { background: linear-gradient(135deg, #dc2626, #ef4444); }
+        .btn.sm { padding: 7px 14px; font-size: .78rem; }
+
+        /* theme toggle */
+        .theme-toggle {
+            width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
+            background: var(--lighter); font-size: 1.2rem; box-shadow: var(--shadow);
+        }
+
+        /* stats */
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 22px; }
+        .stat {
+            background: var(--white); border-radius: 16px; padding: 18px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+        }
+        .stat::before { content: ''; position: absolute; inset-inline-start: 0; top: 0; bottom: 0; width: 4px; background: var(--gradient-primary); }
+        .stat .num { font-size: 1.5rem; font-weight: 900; }
+        .stat .lbl { font-size: .78rem; color: var(--gray); margin-top: 4px; }
+        .stat.paid::before { background: linear-gradient(135deg,#059669,#10b981); }
+        .stat.pend::before { background: linear-gradient(135deg,#f59e0b,#ef4444); }
+        .stat.revenue::before { background: var(--gradient-primary); }
+
+        /* toolbar */
+        .toolbar {
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+            background: var(--white); border-radius: 16px; padding: 14px 18px;
+            box-shadow: var(--shadow); margin-bottom: 18px;
+        }
+        .toolbar input[type="search"], .toolbar select {
+            font-family: inherit; font-size: .85rem; color: var(--dark);
+            background: var(--lighter); border: 1.5px solid transparent;
+            border-radius: 12px; padding: 10px 14px; outline: none; transition: border .2s;
+        }
+        .toolbar input[type="search"] { flex: 1; min-width: 200px; }
+        .toolbar input:focus, .toolbar select:focus { border-color: var(--primary); }
+        .count-chip { font-size: .78rem; color: var(--gray); font-weight: 700; }
+
+        /* table */
+        .table-card { background: var(--white); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
+        .table-scroll { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 760px; }
+        thead th {
+            background: var(--gradient-primary); color: #fff; font-size: .78rem; font-weight: 700;
+            padding: 13px 14px; text-align: right; white-space: nowrap;
+        }
+        tbody td { padding: 13px 14px; font-size: .85rem; border-bottom: 1px solid var(--light); vertical-align: middle; }
+        [data-theme="dark"] tbody td { border-bottom-color: var(--dark); }
+        tbody tr { transition: background .15s; }
+        tbody tr:hover { background: var(--lighter); }
+        tbody tr:last-child td { border-bottom: none; }
+        .code { font-weight: 800; color: var(--primary); white-space: nowrap; }
+        .items-cell { max-width: 260px; }
+        .items-cell .it { font-size: .78rem; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .total-cell { font-weight: 800; white-space: nowrap; }
+
+        /* status badges */
+        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; font-size: .74rem; font-weight: 800; white-space: nowrap; }
+        .badge.paid { background: rgba(16,185,129,.14); color: #059669; }
+        .badge.pending { background: rgba(245,158,11,.14); color: #d97706; }
+        .badge.cod { background: rgba(100,116,139,.14); color: var(--gray); }
+        .badge.canceled { background: rgba(239,68,68,.14); color: #dc2626; }
+        .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
+        @keyframes pulse { 50% { opacity: .35; } }
+
+        /* inline status select */
+        .st-select {
+            font-family: inherit; font-size: .74rem; font-weight: 700; cursor: pointer;
+            border: 1.5px solid var(--gray-light); background: var(--lighter); color: var(--dark);
+            border-radius: 10px; padding: 6px 8px; outline: none;
+        }
+        .row-actions { display: flex; gap: 6px; }
+
+        /* empty */
+        .empty { text-align: center; padding: 60px 20px; color: var(--gray); }
+        .empty .big { font-size: 3rem; margin-bottom: 12px; }
+
+        /* modal */
+        .modal-back {
+            position: fixed; inset: 0; background: rgba(15,23,42,.6); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+        }
+        .modal-back.show { display: flex; }
+        .modal {
+            background: var(--white); border-radius: 20px; max-width: 640px; width: 100%;
+            max-height: 86vh; overflow-y: auto; box-shadow: var(--shadow-lg); padding: 24px;
+            animation: pop .25s cubic-bezier(.3,1.4,.6,1);
+        }
+        @keyframes pop { from { transform: scale(.92); opacity: 0; } }
+        .modal h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 4px; }
+        .modal .m-sub { font-size: .78rem; color: var(--gray); margin-bottom: 18px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 16px; }
+        .info-cell { background: var(--lighter); border-radius: 12px; padding: 10px 12px; }
+        .info-cell .k { font-size: .7rem; color: var(--gray); margin-bottom: 3px; }
+        .info-cell .v { font-size: .84rem; font-weight: 700; word-break: break-word; }
+        .m-items { border: 1px solid var(--light); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+        [data-theme="dark"] .m-items { border-color: var(--dark); }
+        .m-items table { min-width: 0; }
+        .m-items thead th { background: var(--lighter); color: var(--gray); font-size: .72rem; padding: 9px 12px; }
+        .m-items tbody td { font-size: .8rem; padding: 9px 12px; }
+        .totals { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+        .t-row { display: flex; justify-content: space-between; font-size: .85rem; }
+        .t-row.grand { font-weight: 900; font-size: 1rem; color: var(--primary); border-top: 2px dashed var(--gray-light); padding-top: 10px; }
+        .m-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        /* charts */
+        .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
+        .chart-card { background: var(--white); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); }
+        .chart-card.wide { grid-column: 1 / -1; }
+        .chart-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+        .chart-head h3 { font-size: .9rem; font-weight: 800; }
+        .chart-note { font-size: .7rem; color: var(--gray); }
+        .bars { display: flex; align-items: stretch; gap: 6px; height: 150px; }
+        .bars-days .bar-wrap { flex: 1; }
+        .bars-months .bar-wrap { flex: 1; }
+        .bar-wrap { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+        .bar {
+            width: 100%; max-width: 34px; border-radius: 6px 6px 2px 2px;
+            background: var(--gradient-primary); min-height: 0;
+            transform-origin: bottom; animation: grow .7s cubic-bezier(.3,.8,.3,1) backwards;
+            position: relative; cursor: default; transition: filter .15s;
+        }
+        .bar.empty { background: var(--lighter); border: 1px dashed var(--gray-light); }
+        .bar:hover { filter: brightness(1.2); }
+        @keyframes grow { from { transform: scaleY(0); } }
+        .bar-label { font-size: .62rem; color: var(--gray); margin-top: 6px; white-space: nowrap; }
+        .bar-empty { color: var(--gray-light); font-size: .68rem; align-self: center; margin: auto; }
+        .bar-tip {
+            position: fixed; z-index: 300; pointer-events: none;
+            background: var(--dark-secondary); color: var(--light); font-size: .72rem; font-weight: 700;
+            padding: 7px 12px; border-radius: 10px; opacity: 0; transform: translate(-50%, -6px);
+            transition: opacity .15s; white-space: nowrap;
+        }
+        .bar-tip.show { opacity: 1; }
+        /* top courses */
+        .top-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .top-row:last-child { margin-bottom: 0; }
+        .top-emoji { font-size: 1.3rem; width: 38px; text-align: center; flex-shrink: 0; }
+        .top-name { font-size: .82rem; font-weight: 700; min-width: 150px; }
+        .top-track { flex: 1; height: 12px; border-radius: 999px; background: var(--lighter); overflow: hidden; }
+        [data-theme="dark"] .top-track { background: var(--dark); }
+        .top-fill { height: 100%; border-radius: 999px; background: var(--gradient-primary); width: 0; transition: width 1s cubic-bezier(.3,.8,.3,1); }
+        .top-fill.gold { background: var(--gradient-warm); }
+        .top-fill.silver { background: linear-gradient(135deg,#94a3b8,#cbd5e1); }
+        .top-fill.bronze { background: linear-gradient(135deg,#b45309,#d97706); }
+        .top-num { font-size: .78rem; font-weight: 800; color: var(--primary); min-width: 34px; text-align: center; }
+        .top-rev { font-size: .7rem; color: var(--gray); min-width: 96px; text-align: left; }
+
+        /* login gate */
+        .gate-back {
+            position: fixed; inset: 0; z-index: 500;
+            background: var(--gradient-hero, linear-gradient(135deg,#0f172a,#1e3a5f));
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .gate-back.hidden { display: none; }
+        .gate {
+            background: var(--white); border-radius: 24px; padding: 36px 32px;
+            width: 100%; max-width: 380px; text-align: center;
+            box-shadow: var(--shadow-lg); animation: pop .3s cubic-bezier(.3,1.4,.6,1);
+        }
+        @keyframes pop { from { transform: scale(.92); opacity: 0; } }
+        .gate img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 14px; }
+        .gate h2 { font-size: 1.1rem; font-weight: 900; }
+        .gate .g-sub { font-size: .78rem; color: var(--gray); margin: 6px 0 18px; }
+        .gate input {
+            width: 100%; font-family: inherit; font-size: .95rem; text-align: center; letter-spacing: 2px;
+            padding: 12px; border-radius: 12px; border: 1.5px solid var(--gray-light);
+            background: var(--lighter); color: var(--dark); outline: none; transition: border .2s;
+        }
+        .gate input:focus { border-color: var(--primary); }
+        .gate .g-err { min-height: 20px; font-size: .74rem; color: #dc2626; font-weight: 700; margin: 8px 0 4px; }
+        .gate.shake { animation: shake .4s; }
+        @keyframes shake { 20%,60% { transform: translateX(-8px); } 40%,80% { transform: translateX(8px); } }
+        .gate .g-back { display: inline-block; margin-top: 14px; font-size: .78rem; color: var(--gray); text-decoration: none; }
+        .gate .g-back:hover { color: var(--primary); }
+
+        /* toast */
+        #toast {
+            position: fixed; bottom: 24px; inset-inline-start: 50%; transform: translateX(50%);
+            background: var(--dark-secondary); color: var(--light); padding: 12px 22px;
+            border-radius: 999px; font-size: .85rem; font-weight: 700; opacity: 0;
+            pointer-events: none; transition: opacity .3s, transform .3s; z-index: 200;
+        }
+        #toast.show { opacity: 1; transform: translateX(50%) translateY(-6px); }
+
+        @media (max-width: 640px) {
+            .topbar { flex-wrap: wrap; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .charts { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== login gate ===== -->
+    <div class="gate-back" id="gateBack">
+        <form class="gate" id="gateForm" autocomplete="off">
+            <img src="profile.jpg" alt="">
+            <h2>پنل مدیریت</h2>
+            <p class="g-sub">برای ورود رمز عبور مدیر را وارد کنید</p>
+            <input type="password" id="gatePass" placeholder="رمز عبور" dir="ltr">
+            <div class="g-err" id="gateErr"></div>
+            <button class="btn" type="submit" style="width:100%">ورود 🔐</button>
+            <a class="g-back" href="index.html">← بازگشت به سایت</a>
+        </form>
+    </div>
+
+    <div class="wrap" id="panelWrap" style="display:none">
+        <header class="topbar">
+            <img src="profile.jpg" alt="دکتر هادی روشن">
+            <div>
+                <h1>پنل مدیریت سفارش‌ها</h1>
+                <div class="sub">سفارش‌های ثبت‌شده در همین مرورگر (localStorage)</div>
+            </div>
+            <div class="spacer"></div>
+            <button class="theme-toggle" id="themeBtn" title="تغییر تم">🌙</button>
+            <button class="btn ghost sm" id="logoutBtn" title="خروج از پنل">خروج ⎋</button>
+            <a class="btn ghost" href="index.html">بازگشت به سایت</a>
+        </header>
+
+        <section class="stats" id="stats"></section>
+
+        <section class="charts">
+            <div class="chart-card">
+                <div class="chart-head"><h3>📈 فروش ۱۴ روز اخیر</h3><span class="chart-note">تومان</span></div>
+                <div class="bars bars-days" id="dailyChart"></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-head"><h3>🗓 فروش ۱۲ ماه اخیر</h3><span class="chart-note">تومان</span></div>
+                <div class="bars bars-months" id="monthlyChart"></div>
+            </div>
+            <div class="chart-card wide">
+                <div class="chart-head"><h3>🏆 پرفروش‌ترین دوره‌ها</h3><span class="chart-note">تعداد فروش</span></div>
+                <div id="topCourses"></div>
+            </div>
+        </section>
+
+        <div class="toolbar">
+            <input type="search" id="q" placeholder="🔍 جستجو: کد سفارش، نام، موبایل…">
+            <select id="stFilter">
+                <option value="">همه وضعیت‌ها</option>
+                <option value="پرداخت شده">پرداخت شده</option>
+                <option value="در انتظار تایید رسید">در انتظار تایید رسید</option>
+                <option value="در انتظار پرداخت در محل">در انتظار پرداخت در محل</option>
+                <option value="لغو شده">لغو شده</option>
+            </select>
+            <select id="sortSel">
+                <option value="new">جدیدترین</option>
+                <option value="old">قدیمی‌ترین</option>
+                <option value="high">گران‌ترین</option>
+            </select>
+            <button class="btn sm ghost" id="csvBtn">⬇️ CSV</button>
+            <button class="btn sm ghost" id="jsonBtn">⬇️ JSON</button>
+            <span class="count-chip" id="countChip"></span>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>کد سفارش</th>
+                            <th>مشتری</th>
+                            <th>اقلام</th>
+                            <th>مبلغ کل</th>
+                            <th>روش پرداخت</th>
+                            <th>تاریخ</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+            <div class="empty" id="empty" style="display:none">
+                <div class="big">🗂️</div>
+                <p><b>هنوز سفارشی ثبت نشده است.</b></p>
+                <p style="font-size:.8rem;margin-top:6px">با انجام یک خرید آزمایشی در سایت، سفارش‌ها اینجا ظاهر می‌شوند.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- details modal -->
+    <div class="modal-back" id="modalBack">
+        <div class="modal" id="modalBox"></div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+    'use strict';
+    /* ---------- login gate ---------- */
+    const PASS_KEY = 'hr_admin_pass';
+    const DEFAULT_PASS = 'hr-admin-1405';
+    const gateBack = document.getElementById('gateBack');
+    const gateForm = document.getElementById('gateForm');
+    const gatePass = document.getElementById('gatePass');
+    const gateErr = document.getElementById('gateErr');
+    const panelWrap = document.getElementById('panelWrap');
+    function getPass() { try { return localStorage.getItem(PASS_KEY) || DEFAULT_PASS; } catch (e) { return DEFAULT_PASS; } }
+    function unlock() { sessionStorage.setItem('hr_admin_ok', '1'); gateBack.classList.add('hidden'); panelWrap.style.display = ''; }
+    function lock() { sessionStorage.removeItem('hr_admin_ok'); gateBack.classList.remove('hidden'); panelWrap.style.display = 'none'; gatePass.value = ''; gateErr.textContent = ''; }
+    (function initGate() {
+        if (sessionStorage.getItem('hr_admin_ok') === '1') unlock();
+        else setTimeout(() => gatePass.focus(), 200);
+    })();
+    gateForm.addEventListener('submit', e => {
+        e.preventDefault();
+        if (gatePass.value === getPass()) {
+            gateErr.textContent = ''; unlock(); render();
+            toast('✓ خوش آمدید، مدیر گرامی');
+        } else {
+            gateErr.textContent = '✖ رمز عبور اشتباه است';
+            gateForm.classList.remove('shake'); void gateForm.offsetWidth; gateForm.classList.add('shake');
+            gatePass.select();
+        }
+    });
+    document.getElementById('logoutBtn').addEventListener('click', () => { lock(); });
+    /* change password: run changeAdminPass('new-pass') in console */
+    window.changeAdminPass = function (np) {
+        if (typeof np !== 'string' || np.length < 4) return 'رمز باید حداقل ۴ کاراکتر باشد';
+        try { localStorage.setItem(PASS_KEY, np); } catch (e) { return 'ذخیره ممکن نشد'; }
+        return '✓ رمز مدیر تغییر کرد';
+    };
+
+    /* ---------- theme ---------- */
+    const root = document.documentElement;
+    try { if (localStorage.getItem('theme') === 'dark') { root.setAttribute('data-theme', 'dark'); document.getElementById('themeBtn').textContent = '☀️'; } } catch (e) {}
+    document.getElementById('themeBtn').addEventListener('click', () => {
+        const dark = root.hasAttribute('data-theme');
+        if (dark) { root.removeAttribute('data-theme'); document.getElementById('themeBtn').textContent = '🌙'; }
+        else { root.setAttribute('data-theme', 'dark'); document.getElementById('themeBtn').textContent = '☀️'; }
+        try { localStorage.setItem('theme', dark ? 'light' : 'dark'); } catch (e) {}
+    });
+
+    /* ---------- helpers ---------- */
+    const faNum = n => Number(n).toLocaleString('fa-IR');
+    const money = n => faNum(n) + ' تومان';
+    const STATUS_LIST = ['پرداخت شده', 'در انتظار تایید رسید', 'در انتظار پرداخت در محل', 'لغو شده'];
+    const PAY_LABEL = { gateway: 'درگاه بانکی', cod: 'پرداخت در محل', card: 'کارت به کارت' };
+    function statusClass(s) {
+        if (s === 'پرداخت شده') return 'paid';
+        if (s === 'در انتظار تایید رسید') return 'pending';
+        if (s === 'در انتظار پرداخت در محل') return 'cod';
+        return 'canceled';
+    }
+    /* Gregorian → Jalali (standard algorithm) */
+    function toJalali(gy, gm, gd) {
+        const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+        let jy = (gy <= 1600) ? 0 : 979;
+        gy -= (gy <= 1600) ? 621 : 1600;
+        const gy2 = (gm > 2) ? (gy + 1) : gy;
+        let days = (365 * gy) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100)
+                 + Math.floor((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+        jy += 33 * Math.floor(days / 12053); days %= 12053;
+        jy += 4 * Math.floor(days / 1461); days %= 1461;
+        if (days > 365) { jy += Math.floor((days - 1) / 365); days = (days - 1) % 365; }
+        const jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+        const jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+        return [jy, jm, jd];
+    }
+    function faDigits(s) { return String(s).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]); }
+    function faDate(iso) {
+        const d = new Date(iso);
+        const [jy, jm, jd] = toJalali(d.getFullYear(), d.getMonth() + 1, d.getDate());
+        const hh = String(d.getHours()).padStart(2, '0'), mm = String(d.getMinutes()).padStart(2, '0');
+        return faDigits(jy) + '/' + faDigits(jm) + '/' + faDigits(jd) + ' — ' + faDigits(hh) + ':' + faDigits(mm);
+    }
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    /* ---------- state ---------- */
+    let orders = [];
+    let currentId = null;
+    function loadOrders() {
+        try { orders = JSON.parse(localStorage.getItem('hr_orders') || '[]'); }
+        catch (e) { orders = []; }
+    }
+    function saveOrders() {
+        try { localStorage.setItem('hr_orders', JSON.stringify(orders)); } catch (e) { toast('⚠️ ذخیره ممکن نشد'); }
+    }
+
+    /* ---------- filters ---------- */
+    const qInput = document.getElementById('q');
+    const stFilter = document.getElementById('stFilter');
+    const sortSel = document.getElementById('sortSel');
+    function visible() {
+        const q = qInput.value.trim().toLowerCase();
+        let list = orders.filter(o => {
+            if (stFilter.value && o.status !== stFilter.value) return false;
+            if (!q) return true;
+            const hay = [o.code, o.customer && o.customer.name, o.customer && o.customer.phone, o.customer && o.customer.national, o.customer && o.customer.email]
+                .map(x => String(x || '').toLowerCase()).join(' ');
+            return hay.includes(q);
+        });
+        if (sortSel.value === 'new') list.sort((a, b) => new Date(b.date) - new Date(a.date));
+        if (sortSel.value === 'old') list.sort((a, b) => new Date(a.date) - new Date(b.date));
+        if (sortSel.value === 'high') list.sort((a, b) => (b.total || 0) - (a.total || 0));
+        return list;
+    }
+
+    /* ---------- stats ---------- */
+    function renderStats() {
+        const total = orders.length;
+        const paid = orders.filter(o => o.status === 'پرداخت شده').length;
+        const pend = orders.filter(o => o.status !== 'پرداخت شده' && o.status !== 'لغو شده').length;
+        const revenue = orders.filter(o => o.status === 'پرداخت شده').reduce((s, o) => s + (o.total || 0), 0);
+        document.getElementById('stats').innerHTML = [
+            [' total', faNum(total), 'کل سفارش‌ها'],
+            [' paid', faNum(paid), 'پرداخت شده'],
+            [' pend', faNum(pend), 'در انتظار'],
+            [' revenue', money(revenue), 'درآمد (پرداخت‌شده)']
+        ].map(([cls, num, lbl]) => '<div class="stat ' + cls.trim() + '"><div class="num">' + num + '</div><div class="lbl">' + lbl + '</div></div>').join('');
+    }
+
+    /* ---------- charts ---------- */
+    const FA_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+    const FA_WEEKDAYS = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+    const paidOrders = () => orders.filter(o => o.status === 'پرداخت شده');
+    function dayKey(d) { return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); }
+
+    function renderCharts() {
+        const paid = paidOrders();
+
+        /* --- daily: last 14 days (incl. today) --- */
+        const daily = [];
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        for (let i = 13; i >= 0; i--) {
+            const d = new Date(today); d.setDate(d.getDate() - i);
+            daily.push({ date: d, total: 0, count: 0, key: dayKey(d) });
+        }
+        const dMap = new Map(daily.map(x => [x.key, x]));
+        paid.forEach(o => {
+            const d = new Date(o.date); d.setHours(0, 0, 0, 0);
+            const slot = dMap.get(dayKey(d));
+            if (slot) { slot.total += (o.total || 0); slot.count++; }
+        });
+        const PLOT = 120; /* px plot area inside 150px chart (label ~30px) */
+        const dMax = Math.max(...daily.map(x => x.total), 1);
+        document.getElementById('dailyChart').innerHTML = daily.map(x => {
+            const hpx = x.total ? Math.max(6, Math.round(x.total / dMax * PLOT)) : 3;
+            return '<div class="bar-wrap"><div class="bar' + (x.total ? '' : ' empty') + '" style="height:' + hpx + 'px" ' +
+                'data-tip="' + FA_WEEKDAYS[x.date.getDay()] + ' ' + faDigits(x.date.getDate()) + ' ' + FA_MONTHS[x.date.getMonth()] + ' — ' +
+                (x.total ? money(x.total) + ' (' + faNum(x.count) + ' سفارش)' : 'فروشی نبوده') + '"></div>' +
+                '<div class="bar-label">' + faDigits(x.date.getDate()) + '</div></div>';
+        }).join('') || '<div class="bar-empty">داده‌ای نیست</div>';
+
+        /* --- monthly: last 12 months, jalali labels --- */
+        const monthly = [];
+        const now = new Date();
+        for (let i = 11; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            monthly.push({ y: d.getFullYear(), m: d.getMonth(), total: 0, count: 0 });
+        }
+        const mMap = new Map(monthly.map(x => [x.y + '-' + x.m, x]));
+        paid.forEach(o => {
+            const d = new Date(o.date);
+            const slot = mMap.get(d.getFullYear() + '-' + d.getMonth());
+            if (slot) { slot.total += (o.total || 0); slot.count++; }
+        });
+        const mMax = Math.max(...monthly.map(x => x.total), 1);
+        document.getElementById('monthlyChart').innerHTML = monthly.map(x => {
+            const [jy, jm] = toJalali(x.y, x.m + 1, 15);
+            const hpx = x.total ? Math.max(6, Math.round(x.total / mMax * PLOT)) : 3;
+            return '<div class="bar-wrap"><div class="bar' + (x.total ? '' : ' empty') + '" style="height:' + hpx + 'px" ' +
+                'data-tip="' + FA_MONTHS[jm - 1] + ' ' + faDigits(jy) + ' — ' +
+                (x.total ? money(x.total) + ' (' + faNum(x.count) + ' سفارش)' : 'فروشی نبوده') + '"></div>' +
+                '<div class="bar-label">' + FA_MONTHS[jm - 1].slice(0, 3) + '</div></div>';
+        }).join('') || '<div class="bar-empty">داده‌ای نیست</div>';
+
+        /* --- top courses (paid only) --- */
+        const cMap = new Map();
+        paid.forEach(o => (o.items || []).forEach(it => {
+            if (!cMap.has(it.name)) cMap.set(it.name, { emoji: it.emoji || '🎓', name: it.name, qty: 0, rev: 0 });
+            const c = cMap.get(it.name); c.qty += it.qty; c.rev += it.qty * (it.price || 0);
+        }));
+        const top = [...cMap.values()].sort((a, b) => b.qty - a.qty).slice(0, 5);
+        const qMax = Math.max(...top.map(c => c.qty), 1);
+        const medal = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+        const fillCls = ['gold', 'silver', 'bronze', '', ''];
+        document.getElementById('topCourses').innerHTML = top.length
+            ? top.map((c, i) =>
+                '<div class="top-row"><div class="top-emoji">' + medal[i] + '</div>' +
+                '<div class="top-name">' + c.emoji + ' ' + c.name + '</div>' +
+                '<div class="top-track"><div class="top-fill ' + fillCls[i] + '" data-w="' + Math.round(c.qty / qMax * 100) + '"></div></div>' +
+                '<div class="top-num">' + faNum(c.qty) + '</div>' +
+                '<div class="top-rev">' + money(c.rev) + '</div></div>').join('')
+            : '<div class="bar-empty">هنوز فروشی ثبت نشده</div>';
+        /* animate fills */
+        requestAnimationFrame(() => requestAnimationFrame(() =>
+            document.querySelectorAll('#topCourses .top-fill').forEach(f => f.style.width = f.getAttribute('data-w') + '%')));
+    }
+
+    /* bar tooltip (single reused element) */
+    (function () {
+        const tip = document.createElement('div'); tip.className = 'bar-tip'; document.body.appendChild(tip);
+        document.addEventListener('mouseover', e => {
+            const bar = e.target.closest('.bar');
+            if (!bar) return;
+            tip.textContent = bar.getAttribute('data-tip');
+            const r = bar.getBoundingClientRect();
+            tip.style.left = (r.left + r.width / 2) + 'px';
+            tip.style.top = (r.top - 6) + 'px';
+            tip.classList.add('show');
+        });
+        document.addEventListener('mouseout', e => { if (e.target.closest('.bar')) tip.classList.remove('show'); });
+    })();
+
+    /* ---------- table ---------- */
+    function payLabel(o) {
+        const m = o.payment && o.payment.method;
+        return PAY_LABEL[m] || (m === undefined ? '—' : String(m));
+    }
+    function render() {
+        renderStats();
+        renderCharts();
+        const list = visible();
+        document.getElementById('countChip').textContent = list.length === orders.length
+            ? 'نمایش ' + faNum(list.length) + ' سفارش'
+            : 'نمایش ' + faNum(list.length) + ' از ' + faNum(orders.length);
+        const empty = document.getElementById('empty');
+        empty.style.display = orders.length === 0 ? 'block' : 'none';
+        document.querySelector('table').style.display = orders.length === 0 ? 'none' : 'table';
+        document.getElementById('tbody').innerHTML = list.map(o => {
+            const items = (o.items || []).map(i => i.emoji + ' ' + i.name + ' ×' + faNum(i.qty)).join('، ');
+            const sel = '<select class="st-select" data-code="' + o.code + '">' +
+                STATUS_LIST.map(s => '<option' + (s === o.status ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>';
+            return '<tr>' +
+                '<td class="code">' + o.code + '</td>' +
+                '<td>' + ((o.customer && o.customer.name) || '—') + '<br><span style="font-size:.72rem;color:var(--gray)">' + ((o.customer && o.customer.phone) || '') + '</span></td>' +
+                '<td class="items-cell"><div class="it">' + (items || '—') + '</div></td>' +
+                '<td class="total-cell">' + money(o.total || 0) + '</td>' +
+                '<td>' + payLabel(o) + '</td>' +
+                '<td style="white-space:nowrap;font-size:.76rem">' + faDate(o.date) + '</td>' +
+                '<td><span class="badge ' + statusClass(o.status) + '"><span class="dot"></span>' + o.status + '</span></td>' +
+                '<td><div class="row-actions">' +
+                    '<button class="btn sm ghost" data-view="' + o.code + '">جزئیات</button>' +
+                    '<button class="btn sm danger" data-del="' + o.code + '">حذف</button>' +
+                '</div>' + sel + '</td>' +
+            '</tr>';
+        }).join('');
+    }
+
+    /* ---------- status change ---------- */
+    document.getElementById('tbody').addEventListener('change', e => {
+        if (!e.target.classList.contains('st-select')) return;
+        const code = e.target.getAttribute('data-code');
+        const o = orders.find(x => x.code === code);
+        if (!o) return;
+        o.status = e.target.value;
+        if (o.payment) o.payment.status = o.status;
+        saveOrders(); render();
+        toast('✓ وضعیت ' + code + ' → ' + o.status);
+    });
+
+    /* ---------- details & delete ---------- */
+    document.getElementById('tbody').addEventListener('click', e => {
+        const v = e.target.getAttribute('data-view');
+        if (v) return showDetails(v);
+        const d = e.target.getAttribute('data-del');
+        if (d) {
+            orders = orders.filter(x => x.code !== d);
+            saveOrders(); render();
+            toast('🗑 سفارش ' + d + ' حذف شد');
+        }
+    });
+
+    function showDetails(code) {
+        currentId = code;
+        const o = orders.find(x => x.code === code);
+        if (!o) return;
+        const c = o.customer || {};
+        const cells = [
+            ['نام', c.name], ['موبایل', c.phone], ['کد ملی', c.national], ['ایمیل', c.email],
+            ['استان', c.province], ['کد پستی', c.postal], ['آدرس', c.address], ['روش ارسال', c.shippingMethod]
+        ];
+        const pay = o.payment || {};
+        const payCells = [
+            ['روش', PAY_LABEL[pay.method] || '—'], ['وضعیت پرداخت', pay.status || o.status],
+            ['کارت', pay.card || '—'], ['کد رهگیری (RRN)', pay.rrn || '—']
+        ];
+        document.getElementById('modalBox').innerHTML =
+            '<h3>سفارش ' + o.code + '</h3>' +
+            '<div class="m-sub">' + faDate(o.date) + (o.coupon ? ' • کد تخفیف: ' + o.coupon : '') + '</div>' +
+            '<div class="info-grid">' + cells.map(([k, v]) =>
+                '<div class="info-cell"><div class="k">' + k + '</div><div class="v">' + (v || '—') + '</div></div>').join('') + '</div>' +
+            '<div class="m-items"><table><thead><tr><th>دوره</th><th>تعداد</th><th>قیمت</th><th>جمع</th></tr></thead><tbody>' +
+            (o.items || []).map(i =>
+                '<tr><td>' + i.emoji + ' ' + i.name + '</td><td>' + faNum(i.qty) + '</td><td>' + money(i.price) + '</td><td>' + money(i.price * i.qty) + '</td></tr>').join('') +
+            '</tbody></table></div>' +
+            '<div class="totals">' +
+                '<div class="t-row"><span>جمع اقلام</span><b>' + money(o.subtotal || 0) + '</b></div>' +
+                '<div class="t-row"><span>تخفیف</span><b>' + (o.discount ? '−' + money(o.discount) : '—') + '</b></div>' +
+                '<div class="t-row"><span>ارسال</span><b>' + (o.shipping ? money(o.shipping) : 'رایگان') + '</b></div>' +
+                '<div class="t-row grand"><span>مبلغ کل</span><b>' + money(o.total || 0) + '</b></div>' +
+            '</div>' +
+            '<div class="info-grid" style="margin-bottom:18px">' + payCells.map(([k, v]) =>
+                '<div class="info-cell"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>').join('') + '</div>' +
+            '<div class="m-actions">' +
+                '<select class="st-select" id="mStatus">' + STATUS_LIST.map(s => '<option' + (s === o.status ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>' +
+                '<button class="btn" id="mSave">ذخیره وضعیت</button>' +
+                '<button class="btn ghost" id="mPrint">🖨 چاپ</button>' +
+                '<button class="btn ghost" id="mClose">بستن</button>' +
+            '</div>';
+        document.getElementById('modalBack').classList.add('show');
+        document.getElementById('mClose').addEventListener('click', closeModal);
+        document.getElementById('mSave').addEventListener('click', () => {
+            o.status = document.getElementById('mStatus').value;
+            if (o.payment) o.payment.status = o.status;
+            saveOrders(); render();
+            toast('✓ وضعیت به «' + o.status + '» تغییر کرد');
+            closeModal();
+        });
+        document.getElementById('mPrint').addEventListener('click', () => {
+            const w = window.open('', '_blank');
+            w.document.write('<html dir="rtl"><head><meta charset="utf-8"><title>' + o.code + '</title></head><body style="font-family:Vazirmatn,Tahoma">' +
+                '<h2>سفارش ' + o.code + '</h2><p>' + faDate(o.date) + '</p>' +
+                '<p>مشتری: ' + (c.name || '—') + ' | ' + (c.phone || '') + '</p>' +
+                '<p>مبلغ کل: ' + money(o.total) + ' — وضعیت: ' + o.status + '</p>' +
+                '<ul>' + (o.items || []).map(i => '<li>' + i.name + ' ×' + i.qty + ' = ' + money(i.price * i.qty) + '</li>').join('') + '</ul>' +
+                '</body></html>');
+            w.document.close(); w.print();
+        });
+    }
+    function closeModal() { document.getElementById('modalBack').classList.remove('show'); currentId = null; }
+    document.getElementById('modalBack').addEventListener('click', e => { if (e.target.id === 'modalBack') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    /* ---------- export ---------- */
+    function download(name, text, type) {
+        const blob = new Blob(['\ufeff' + text], { type });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob); a.download = name; a.click();
+        URL.revokeObjectURL(a.href);
+    }
+    document.getElementById('csvBtn').addEventListener('click', () => {
+        if (!orders.length) return toast('سفارشی برای خروجی نیست');
+        const rows = [['کد', 'تاریخ', 'مشتری', 'موبایل', 'تعداد اقلام', 'جمع', 'تخفیف', 'ارسال', 'کل', 'روش پرداخت', 'وضعیت']];
+        visible().forEach(o => rows.push([
+            o.code, o.date, (o.customer && o.customer.name) || '', (o.customer && o.customer.phone) || '',
+            (o.items || []).reduce((s, i) => s + i.qty, 0), o.subtotal, o.discount, o.shipping, o.total,
+            payLabel(o), o.status
+        ]));
+        download('orders.csv', rows.map(r => r.map(x => '"' + String(x).replace(/"/g, '""') + '"').join(',')).join('\n'), 'text/csv;charset=utf-8');
+        toast('⬇️ CSV دانلود شد');
+    });
+    document.getElementById('jsonBtn').addEventListener('click', () => {
+        if (!orders.length) return toast('سفارشی برای خروجی نیست');
+        download('orders.json', JSON.stringify(visible(), null, 2), 'application/json');
+        toast('⬇️ JSON دانلود شد');
+    });
+
+    /* ---------- init ---------- */
+    [qInput, stFilter, sortSel].forEach(el => el.addEventListener('input', render));
+    loadOrders();
+    render();
+
+    /* live refresh when another tab changes orders */
+    window.addEventListener('storage', e => { if (e.key === 'hr_orders') { loadOrders(); render(); } });
+    </script>
+</body>
+</html>

@@ -1,6 +1,16 @@
 # Run — DrRoshan static site
 
-Static multi-page site (no package.json, no dependencies): `index.html`, `cart.html`, `checkout.html`, `payment.html`, shared `shop.css` / `shop.js`, and `profile.png`.
+Static multi-page site (no package.json, no dependencies): `index.html`, `cart.html`, `checkout.html`, `payment.html`, `admin.html` (order-management panel reading `localStorage.hr_orders`), `profile.html` (purchased courses + progress from `hr_orders` / `hr_course_progress`), shared `shop.css` / `shop.js`, `profile.jpg`, plus PWA files (`manifest.json`, `sw.js`, `pwa-*.png`, `favicon-*.png`, `apple-touch-icon.png`).
+
+## How to reproduce the icon artifacts
+
+All icons are generated from `profile.jpg` (which is actually a JPEG — System.Drawing decodes it fine):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .freebuff/make-favicons.ps1
+```
+
+Regenerates the circular favicons (16/32/64/180), the PWA icons `pwa-192.png` / `pwa-512.png`, and the maskable variants `pwa-maskable-192.png` / `pwa-maskable-512.png` (photo at 76% on the `#0f172a` brand background).
 
 ## How to run the server
 

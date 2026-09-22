@@ -8,6 +8,12 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="icon" type="image/png" sizes="64x64" href="favicon-64x64.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="دکتر روشن">
+    <meta name="theme-color" content="#0f172a">
     <meta name="description" content="وبسایت رسمی دکتر هادی روشن - دکترای هوش مصنوعی، مدرس موسسه نسیم رامسر، برنامه‌نویس پایتون و متخصص هوش مصنوعی. دوره‌های جامع آموزشی با ۳۱ سال سابقه.">
     <meta name="keywords" content="پایتون, هوش مصنوعی, آموزش برنامه نویسی, دکتر روشن, رامسر, یادگیری ماشین, Deep Learning">
     <meta name="author" content="دکتر هادی روشن">
@@ -19,7 +25,6 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="دکتر هادی روشن | برنامه‌نویس پایتون و هوش مصنوعی">
     <meta name="twitter:description" content="دکترای هوش مصنوعی، مدرس موسسه نسیم رامسر. دوره‌های جامع پایتون و AI.">
-    <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -638,7 +643,7 @@
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">
-            <img src="profile.png" alt=""></div>
+            <img src="profile.jpg" alt=""></div>
         <div class="loading-spinner"></div>
         <div class="loading-text">دکتر هادی روشن</div>
         <div class="loading-bar"><div class="loading-bar-inner"></div></div>
@@ -654,7 +659,7 @@
     <nav class="navbar" id="navbar" role="navigation" aria-label="منوی اصلی">
         <div class="container">
             <a href="#hero" class="nav-logo" aria-label="خانه">
-                <div class="nav-logo-icon"><img src="profile.png" alt="دکتر هادی روشن"></div>
+                <div class="nav-logo-icon"><img src="profile.jpg" alt="دکتر هادی روشن"></div>
                 <div>
                     <div class="nav-logo-text">دکتر هادی روشن</div>
                     <div class="nav-logo-sub">هوش مصنوعی و پایتون</div>
@@ -668,6 +673,7 @@
                 <a href="#blog" role="menuitem">بلاگ</a>
                 <a href="#faq" role="menuitem">سوالات</a>
                 <a href="#testimonials" role="menuitem">نظرات</a>
+                <a href="profile.html" role="menuitem">دوره‌های من</a>
                 <a href="#contact" role="menuitem">ارتباط با ما</a>
                 <a href="#contact" class="nav-cta" role="menuitem">مشاوره رایگان</a>
             </div>
@@ -713,7 +719,7 @@
                 <div class="hero-visual">
                     <div class="hero-avatar-container">
                         <div class="hero-avatar">
-                            <img src="profile.png" alt=""></div>
+                            <img src="profile.jpg" alt=""></div>
                         <div class="avatar-halo"></div>
                         <div class="hero-avatar-ring"></div>
                         <div class="hero-floating-card card-1">
@@ -1449,5 +1455,13 @@
     const nlForm=document.querySelector('.newsletter-form');
     if(nlForm)nlForm.addEventListener('submit',()=>setTimeout(party,100));
     </script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
 </body>
 </html>
