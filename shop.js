@@ -131,6 +131,29 @@ function generateOrder(orderInfo, paymentResult) {
     return order;
 }
 
+// ارسال سفارش به سرور جنگو (داشبورد) — مشترک بین همهٔ مسیرهای خرید
+function pushOrderToServer(order, onUpdate) {
+    try {
+        fetch('/api/orders/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...order, payment: { ...order.payment, receipt: order.payment.receipt || '' } }),
+        }).then(r => r.json()).then(d => {
+            if (d && d.ok && d.code && d.code !== order.code) {
+                order.code = d.code;
+                try {
+                    const lo = JSON.parse(sessionStorage.getItem('hr_last_order') || 'null');
+                    if (lo && lo.code) { lo.code = d.code; sessionStorage.setItem('hr_last_order', JSON.stringify(lo)); }
+                    const orders = JSON.parse(localStorage.getItem('hr_orders') || '[]');
+                    const match = orders[orders.length - 1];
+                    if (match && match.payment && match.payment.method === order.payment.method && match.total === order.total) match.code = d.code, localStorage.setItem('hr_orders', JSON.stringify(orders));
+                } catch (e) {}
+                if (typeof onUpdate === 'function') onUpdate(d.code);
+            }
+        }).catch(() => {});
+    } catch (e) {}
+}
+
 // ---------- checkout draft shared across steps/pages ----------
 const DRAFT_KEY = 'hr_checkout_draft';
 function saveDraft(patch) {
@@ -184,11 +207,11 @@ function detectBank(num) {
     const bin = onlyDigits(num).slice(0, 4);
     const banks = {
         '6037': 'بانک ملی', '5859': 'بانک ملی', '5892': 'سپه', '6219': 'بانک سامان',
-        '6273': 'بانک تجارت', '5858': 'تجارت', '6219 Saman': '', '6280': 'بانک مسکن',
+        '6273': 'بانک تجارت', '5858': 'تجارت', '6280': 'بانک مسکن',
         '5022': 'بانک پاسارگاد', '6274': 'بانک اقتصاد نوین', '5028': 'بانک شهر',
         '5042': 'بانک رفاه', '6063': 'بانک ملت', '6104': 'بانک ملت',
         '9919': 'بانک ملت', '5894': 'بانک سپه', '6276': 'بانک صنعت و معدن',
-        '6037 ب': '', '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
+        '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
         '6362': 'بانک آینده', '5058': 'بانک توریسم', '6367': 'بانک آینده',
         '5029': 'بانک توسعه تعاون', '6064': 'بانک گردشگری', '2071': 'بانک توسعه صادرات'
     };

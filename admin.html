@@ -123,6 +123,11 @@
         .badge.pending { background: rgba(245,158,11,.14); color: #d97706; }
         .badge.cod { background: rgba(100,116,139,.14); color: var(--gray); }
         .badge.canceled { background: rgba(239,68,68,.14); color: #dc2626; }
+        .badge.shipped { background: rgba(37,99,235,.14); color: #2563eb; }
+        .track-code {
+            font-size: .72rem; font-weight: 700; color: var(--primary);
+            cursor: copy; border-bottom: 1px dashed var(--primary); padding-bottom: 1px;
+        }
         .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: pulse 2s infinite; }
         @keyframes pulse { 50% { opacity: .35; } }
 
@@ -173,7 +178,7 @@
         .chart-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
         .chart-head h3 { font-size: .9rem; font-weight: 800; }
         .chart-note { font-size: .7rem; color: var(--gray); }
-        .bars { display: flex; align-items: stretch; gap: 6px; height: 150px; }
+        .bars { display: flex; align-items: flex-end; gap: 6px; height: 150px; }
         .bars-days .bar-wrap { flex: 1; }
         .bars-months .bar-wrap { flex: 1; }
         .bar-wrap { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
@@ -183,7 +188,7 @@
             transform-origin: bottom; animation: grow .7s cubic-bezier(.3,.8,.3,1) backwards;
             position: relative; cursor: default; transition: filter .15s;
         }
-        .bar.empty { background: var(--lighter); border: 1px dashed var(--gray-light); }
+        .bar-zero { background: var(--lighter); border: 1px dashed var(--gray-light); opacity: .55; }
         .bar:hover { filter: brightness(1.2); }
         @keyframes grow { from { transform: scaleY(0); } }
         .bar-label { font-size: .62rem; color: var(--gray); margin-top: 6px; white-space: nowrap; }
@@ -398,10 +403,11 @@
     /* ---------- helpers ---------- */
     const faNum = n => Number(n).toLocaleString('fa-IR');
     const money = n => faNum(n) + ' تومان';
-    const STATUS_LIST = ['پرداخت شده', 'در انتظار تایید رسید', 'در انتظار پرداخت در محل', 'لغو شده'];
+    const STATUS_LIST = ['پرداخت شده', 'ارسال شد', 'در انتظار تایید رسید', 'در انتظار پرداخت در محل', 'لغو شده'];
     const PAY_LABEL = { gateway: 'درگاه بانکی', cod: 'پرداخت در محل', card: 'کارت به کارت' };
     function statusClass(s) {
         if (s === 'پرداخت شده') return 'paid';
+        if (s === 'ارسال شد') return 'shipped';
         if (s === 'در انتظار تایید رسید') return 'pending';
         if (s === 'در انتظار پرداخت در محل') return 'cod';
         return 'canceled';
@@ -504,7 +510,7 @@
         const dMax = Math.max(...daily.map(x => x.total), 1);
         document.getElementById('dailyChart').innerHTML = daily.map(x => {
             const hpx = x.total ? Math.max(6, Math.round(x.total / dMax * PLOT)) : 3;
-            return '<div class="bar-wrap"><div class="bar' + (x.total ? '' : ' empty') + '" style="height:' + hpx + 'px" ' +
+            return '<div class="bar-wrap"><div class="bar' + (x.total ? '' : ' bar-zero') + '" style="height:' + hpx + 'px" ' +
                 'data-tip="' + FA_WEEKDAYS[x.date.getDay()] + ' ' + faDigits(x.date.getDate()) + ' ' + FA_MONTHS[x.date.getMonth()] + ' — ' +
                 (x.total ? money(x.total) + ' (' + faNum(x.count) + ' سفارش)' : 'فروشی نبوده') + '"></div>' +
                 '<div class="bar-label">' + faDigits(x.date.getDate()) + '</div></div>';
@@ -527,7 +533,7 @@
         document.getElementById('monthlyChart').innerHTML = monthly.map(x => {
             const [jy, jm] = toJalali(x.y, x.m + 1, 15);
             const hpx = x.total ? Math.max(6, Math.round(x.total / mMax * PLOT)) : 3;
-            return '<div class="bar-wrap"><div class="bar' + (x.total ? '' : ' empty') + '" style="height:' + hpx + 'px" ' +
+            return '<div class="bar-wrap"><div class="bar' + (x.total ? '' : ' bar-zero') + '" style="height:' + hpx + 'px" ' +
                 'data-tip="' + FA_MONTHS[jm - 1] + ' ' + faDigits(jy) + ' — ' +
                 (x.total ? money(x.total) + ' (' + faNum(x.count) + ' سفارش)' : 'فروشی نبوده') + '"></div>' +
                 '<div class="bar-label">' + FA_MONTHS[jm - 1].slice(0, 3) + '</div></div>';
@@ -597,7 +603,10 @@
                 '<td class="total-cell">' + money(o.total || 0) + '</td>' +
                 '<td>' + payLabel(o) + '</td>' +
                 '<td style="white-space:nowrap;font-size:.76rem">' + faDate(o.date) + '</td>' +
-                '<td><span class="badge ' + statusClass(o.status) + '"><span class="dot"></span>' + o.status + '</span></td>' +
+                '<td><span class="badge ' + statusClass(o.status) + '"><span class="dot"></span>' + o.status + '</span>' +
+                    (o.status === 'ارسال شد' && o.tracking
+                        ? '<div style="display:flex;align-items:center;gap:4px;margin-top:5px"><span class="track-code" data-copy="' + o.tracking + '" title="کلیک = کپی">📮 ' + faDigits(o.tracking) + '</span></div>'
+                        : '') + '</td>' +
                 '<td><div class="row-actions">' +
                     '<button class="btn sm ghost" data-view="' + o.code + '">جزئیات</button>' +
                     '<button class="btn sm danger" data-del="' + o.code + '">حذف</button>' +
@@ -607,11 +616,55 @@
     }
 
     /* ---------- status change ---------- */
+    const TRACK_RE = /^[0-9]{10,24}$/; /* postal tracking: 10–24 digits */
+    function askTracking(code, then) {
+        const o = orders.find(x => x.code === code);
+        const pre = (o && o.tracking) || '';
+        openPrompt(
+            '📦 کد رهگیری پستی',
+            'سفارش ' + code + ' به وضعیت «ارسال شد» می‌رود. کد رهگیری ۱۰ تا ۲۴ رقمی برگه پستی را وارد کنید:',
+            pre,
+            v => {
+                if (!TRACK_RE.test(v.replace(/\D/g, ''))) { toast('✖ کد رهگیری باید ۱۰ تا ۲۴ رقم باشد'); return false; }
+                if (o) { o.tracking = v.replace(/\D/g, ''); if (o.payment) o.payment.tracking = o.tracking; }
+                then();
+                toast('📦 ' + code + ' ارسال شد — کد رهگیری: ' + faDigits(o.tracking));
+                return true;
+            }
+        );
+    }
+    /* tiny inline prompt modal (reuses gate styles) */
+    function openPrompt(title, sub, value, onSubmit) {
+        const back = document.createElement('div');
+        back.className = 'modal-back show';
+        back.innerHTML = '<div class="modal" style="max-width:400px">' +
+            '<h3>' + title + '</h3><div class="m-sub">' + sub + '</div>' +
+            '<input id="pInput" dir="ltr" style="width:100%;text-align:center;font-size:1rem;letter-spacing:1px;padding:12px;border-radius:12px;border:1.5px solid var(--gray-light);background:var(--lighter);color:var(--dark);outline:none;font-family:inherit">' +
+            '<div class="m-actions" style="margin-top:16px">' +
+            '<button class="btn" id="pOk">تایید</button>' +
+            '<button class="btn ghost" id="pCancel">انصراف</button></div></div>';
+        document.body.appendChild(back);
+        const inp = back.querySelector('#pInput');
+        inp.value = value || '';
+        setTimeout(() => { inp.focus(); inp.select(); }, 100);
+        const close = () => back.remove();
+        const attempt = () => { if (onSubmit(inp.value.trim())) close(); else inp.select(); };
+        back.querySelector('#pOk').addEventListener('click', attempt);
+        back.querySelector('#pCancel').addEventListener('click', close);
+        back.addEventListener('click', e => { if (e.target === back) close(); });
+        inp.addEventListener('keydown', e => { if (e.key === 'Enter') attempt(); if (e.key === 'Escape') close(); });
+    }
     document.getElementById('tbody').addEventListener('change', e => {
         if (!e.target.classList.contains('st-select')) return;
         const code = e.target.getAttribute('data-code');
         const o = orders.find(x => x.code === code);
         if (!o) return;
+        if (e.target.value === 'ارسال شد' && o.status !== 'ارسال شد') {
+            e.target.value = o.status; /* revert dropdown until tracking entered */
+            askTracking(code, () => { o.status = 'ارسال شد'; if (o.payment) o.payment.status = o.status; saveOrders(); render(); });
+            return;
+        }
+        if (o.status === 'ارسال شد' && e.target.value !== 'ارسال شد') { delete o.tracking; if (o.payment) delete o.payment.tracking; }
         o.status = e.target.value;
         if (o.payment) o.payment.status = o.status;
         saveOrders(); render();
@@ -620,6 +673,17 @@
 
     /* ---------- details & delete ---------- */
     document.getElementById('tbody').addEventListener('click', e => {
+        const cp = e.target.getAttribute('data-copy');
+        if (cp) {
+            (navigator.clipboard ? navigator.clipboard.writeText(cp) : Promise.reject())
+                .then(() => toast('📋 کد رهگیری کپی شد: ' + faDigits(cp)))
+                .catch(() => {
+                    const ta = document.createElement('textarea'); ta.value = cp; document.body.appendChild(ta);
+                    ta.select(); document.execCommand('copy'); ta.remove();
+                    toast('📋 کد رهگیری کپی شد: ' + faDigits(cp));
+                });
+            return;
+        }
         const v = e.target.getAttribute('data-view');
         if (v) return showDetails(v);
         const d = e.target.getAttribute('data-del');
@@ -644,6 +708,7 @@
             ['روش', PAY_LABEL[pay.method] || '—'], ['وضعیت پرداخت', pay.status || o.status],
             ['کارت', pay.card || '—'], ['کد رهگیری (RRN)', pay.rrn || '—']
         ];
+        if (o.tracking) payCells.push(['📦 کد رهگیری پستی', '<span class="track-code" data-copy="' + o.tracking + '">' + faDigits(o.tracking) + '</span>']);
         document.getElementById('modalBox').innerHTML =
             '<h3>سفارش ' + o.code + '</h3>' +
             '<div class="m-sub">' + faDate(o.date) + (o.coupon ? ' • کد تخفیف: ' + o.coupon : '') + '</div>' +
@@ -700,11 +765,11 @@
     }
     document.getElementById('csvBtn').addEventListener('click', () => {
         if (!orders.length) return toast('سفارشی برای خروجی نیست');
-        const rows = [['کد', 'تاریخ', 'مشتری', 'موبایل', 'تعداد اقلام', 'جمع', 'تخفیف', 'ارسال', 'کل', 'روش پرداخت', 'وضعیت']];
+        const rows = [['کد', 'تاریخ', 'مشتری', 'موبایل', 'تعداد اقلام', 'جمع', 'تخفیف', 'ارسال', 'کل', 'روش پرداخت', 'وضعیت', 'کد رهگیری پستی']];
         visible().forEach(o => rows.push([
             o.code, o.date, (o.customer && o.customer.name) || '', (o.customer && o.customer.phone) || '',
             (o.items || []).reduce((s, i) => s + i.qty, 0), o.subtotal, o.discount, o.shipping, o.total,
-            payLabel(o), o.status
+            payLabel(o), o.status, o.tracking || ''
         ]));
         download('orders.csv', rows.map(r => r.map(x => '"' + String(x).replace(/"/g, '""') + '"').join(',')).join('\n'), 'text/csv;charset=utf-8');
         toast('⬇️ CSV دانلود شد');

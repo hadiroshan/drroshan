@@ -114,6 +114,13 @@ input,select,textarea { font-family:inherit; }
 .coupon-msg.ok { color:#22c55e; }
 .coupon-msg.err { color:#ef4444; }
 
+/* Free shipping progress (cart.html) */
+.ship-progress { margin:4px 0 14px; background:var(--bg); border-radius:var(--radius-full); height:10px; overflow:hidden; }
+.ship-progress .bar { height:100%; width:0%; border-radius:var(--radius-full); background:var(--gradient-green); transition:width .6s cubic-bezier(0.4,0,0.2,1); }
+.ship-progress .bar.done { background:var(--gradient-primary); }
+.ship-hint { font-size:0.78rem; color:var(--text-muted); margin-bottom:10px; min-height:20px; }
+.ship-hint.ok { color:#22c55e; font-weight:700; }
+
 /* ===== Buttons ===== */
 .btn-x { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:14px 30px; border-radius:var(--radius-full); font-size:0.95rem; font-weight:700; cursor:pointer; border:none; transition:var(--transition); }
 .btn-x-primary { background:var(--gradient-primary); color:white; box-shadow:0 4px 18px rgba(37,99,235,0.35); }
@@ -297,10 +304,13 @@ input,select,textarea { font-family:inherit; }
                     <div class="summary-title">🧾 خلاصه سفارش</div>
 
                     <div class="coupon-row">
-                        <input type="text" id="couponInput" placeholder="کد تخفیف (مثلا ROOSHAN30)">
+                        <input type="text" id="couponInput" inputmode="numeric" autocomplete="off" placeholder="کد تخفیف (مثلا ROOSHAN30)">
                         <button onclick="applyCoupon()">اعمال</button>
                     </div>
                     <div class="coupon-msg" id="couponMsg"></div>
+
+                    <div class="ship-hint" id="shipHint"></div>
+                    <div class="ship-progress" aria-hidden="true"><div class="bar" id="shipBar"></div></div>
 
                     <div class="sum-row"><span>تعداد اقلام</span><b id="sumCount">۰</b></div>
                     <div class="sum-row"><span>جمع کل</span><b id="sumSubtotal">۰ تومان</b></div>
@@ -467,6 +477,29 @@ function generateOrder(orderInfo, paymentResult) {
     return order;
 }
 
+// ارسال سفارش به سرور جنگو (داشبورد) — مشترک بین همهٔ مسیرهای خرید
+function pushOrderToServer(order, onUpdate) {
+    try {
+        fetch('/api/orders/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...order, payment: { ...order.payment, receipt: order.payment.receipt || '' } }),
+        }).then(r => r.json()).then(d => {
+            if (d && d.ok && d.code && d.code !== order.code) {
+                order.code = d.code;
+                try {
+                    const lo = JSON.parse(sessionStorage.getItem('hr_last_order') || 'null');
+                    if (lo && lo.code) { lo.code = d.code; sessionStorage.setItem('hr_last_order', JSON.stringify(lo)); }
+                    const orders = JSON.parse(localStorage.getItem('hr_orders') || '[]');
+                    const match = orders[orders.length - 1];
+                    if (match && match.payment && match.payment.method === order.payment.method && match.total === order.total) match.code = d.code, localStorage.setItem('hr_orders', JSON.stringify(orders));
+                } catch (e) {}
+                if (typeof onUpdate === 'function') onUpdate(d.code);
+            }
+        }).catch(() => {});
+    } catch (e) {}
+}
+
 // ---------- checkout draft shared across steps/pages ----------
 const DRAFT_KEY = 'hr_checkout_draft';
 function saveDraft(patch) {
@@ -520,11 +553,11 @@ function detectBank(num) {
     const bin = onlyDigits(num).slice(0, 4);
     const banks = {
         '6037': 'بانک ملی', '5859': 'بانک ملی', '5892': 'سپه', '6219': 'بانک سامان',
-        '6273': 'بانک تجارت', '5858': 'تجارت', '6219 Saman': '', '6280': 'بانک مسکن',
+        '6273': 'بانک تجارت', '5858': 'تجارت', '6280': 'بانک مسکن',
         '5022': 'بانک پاسارگاد', '6274': 'بانک اقتصاد نوین', '5028': 'بانک شهر',
         '5042': 'بانک رفاه', '6063': 'بانک ملت', '6104': 'بانک ملت',
         '9919': 'بانک ملت', '5894': 'بانک سپه', '6276': 'بانک صنعت و معدن',
-        '6037 ب': '', '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
+        '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
         '6362': 'بانک آینده', '5058': 'بانک توریسم', '6367': 'بانک آینده',
         '5029': 'بانک توسعه تعاون', '6064': 'بانک گردشگری', '2071': 'بانک توسعه صادرات'
     };
@@ -579,13 +612,13 @@ function shopConfetti() {
                         '<div class="cart-page-name">' + item.name + '</div>' +
                         '<div class="cart-page-price">' + money(item.price) + '</div>' +
                         '<div class="qty-box">' +
-                            '<button onclick="cartSetQty(' + i + ',' + (item.qty - 1) + ')">−</button>' +
+                            '<button onclick="cartSetQty(' + i + ',' + (item.qty - 1) + ')" aria-label="کاهش تعداد">−</button>' +
                             '<span class="q">' + faNum(item.qty) + '</span>' +
-                            '<button onclick="cartSetQty(' + i + ',' + (item.qty + 1) + ')">+</button>' +
+                            '<button onclick="cartSetQty(' + i + ',' + (item.qty + 1) + ')" aria-label="افزایش تعداد">+</button>' +
                         '</div>' +
                     '</div>' +
                     '<div class="cart-page-line">' + money(item.price * item.qty) + '</div>' +
-                    '<button class="cart-page-remove" onclick="cartRemove(' + i + ')" title="حذف">🗑️</button>' +
+                    '<button class="cart-page-remove" onclick="cartRemove(' + i + ')" title="حذف" aria-label="حذف از سبد">🗑️</button>' +
                 '</div>'
             ).join('');
         }
@@ -599,6 +632,29 @@ function shopConfetti() {
         document.getElementById('sumShipping').textContent = ship === 0 ? 'رایگان 🎁' : money(ship);
         document.getElementById('sumTotal').textContent = money(cartTotal());
         document.getElementById('goCheckoutBtn').disabled = cart.length === 0;
+
+        // نوار پیشرفت ارسال رایگان
+        const afterDiscount = cartSubtotal() - couponDiscount();
+        const THRESHOLD = 20000000;
+        const remain = THRESHOLD - afterDiscount;
+        const shipHint = document.getElementById('shipHint');
+        const shipBar = document.getElementById('shipBar');
+        if (afterDiscount <= 0) {
+            shipHint.className = 'ship-hint';
+            shipHint.textContent = 'ارسال رایگان برای خرید بالای ' + money(THRESHOLD) + ' — کالای خود را به سبد اضافه کنید';
+            shipBar.style.width = '0%';
+            shipBar.classList.remove('done');
+        } else if (remain > 0) {
+            shipHint.className = 'ship-hint';
+            shipHint.textContent = '🚚 ' + money(remain) + ' تا ارسال رایگان!';
+            shipBar.style.width = Math.min(100, Math.round(afterDiscount / THRESHOLD * 100)) + '%';
+            shipBar.classList.remove('done');
+        } else {
+            shipHint.className = 'ship-hint ok';
+            shipHint.textContent = '🎉 ارسال سفارش شما رایگان است!';
+            shipBar.style.width = '100%';
+            shipBar.classList.add('done');
+        }
     };
 
     function applyCoupon() {

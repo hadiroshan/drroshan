@@ -10,32 +10,47 @@
     <link rel="icon" type="image/png" sizes="64x64" href="favicon-64x64.png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="دکتر روشن">
     <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="پنل یادگیری شما - دوره‌های خریداری‌شده، پیشرفت دوره‌ها و سفارش‌های در جریان در وبسایت دکتر هادی روشن.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb; --primary-dark: #1d4ed8; --secondary: #0ea5e9; --accent: #06b6d4;
+            --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #3b82f6; --secondary: #0ea5e9; --accent: #06b6d4; --accent-light: #22d3ee;
             --dark: #0f172a; --dark-secondary: #1e293b;
             --gray: #64748b; --gray-light: #94a3b8;
             --light: #f1f5f9; --lighter: #f8fafc; --white: #ffffff;
             --gradient-primary: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
             --gradient-green: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
             --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.25);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+            --radius: 12px; --radius-lg: 20px; --radius-full: 9999px;
+            --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            --bg: var(--lighter); --bg-card: var(--white); --text: var(--dark); --text-muted: var(--gray);
+            --border: rgba(0,0,0,0.06);
         }
         [data-theme="dark"] {
-            --light: #0f172a; --lighter: #1e293b; --white: #1e293b;
+            --bg: #0f172a; --bg-card: #1e293b; --text: #f1f5f9; --text-muted: #94a3b8;
+            --light: #1e293b; --lighter: #0f172a; --white: #1e293b;
             --dark: #f8fafc; --dark-secondary: #cbd5e1;
             --gray: #94a3b8; --gray-light: #64748b;
+            --border: rgba(255,255,255,0.08);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Vazirmatn', Tahoma, sans-serif;
-            background: var(--light); color: var(--dark);
+            background: var(--bg); color: var(--text);
             min-height: 100vh; padding: 20px;
-            transition: background .3s, color .3s;
+            line-height: 1.8; direction: rtl;
+            transition: background 0.4s, color 0.4s;
         }
         .wrap { max-width: 1100px; margin: 0 auto; }
 
@@ -43,7 +58,7 @@
         .profile-head {
             display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
             background: var(--gradient-primary); color: #fff;
-            border-radius: 24px; padding: 28px; box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-lg);
             margin-bottom: 22px; position: relative; overflow: hidden;
         }
         .profile-head::after {
@@ -66,41 +81,47 @@
 
         .topbar-actions { display: flex; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
         .btn {
-            font-family: inherit; cursor: pointer; border: none; border-radius: 12px;
-            padding: 10px 18px; font-size: .85rem; font-weight: 700; text-decoration: none;
-            background: var(--gradient-primary); color: #fff; display: inline-block;
-            transition: transform .15s, box-shadow .15s;
+            font-family: inherit; cursor: pointer; border: none; border-radius: var(--radius-full);
+            padding: 12px 28px; font-size: 1rem; font-weight: 600; text-decoration: none;
+            background: var(--gradient-primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            transition: var(--transition); position: relative; overflow: hidden;
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,.35); }
-        .btn.ghost { background: transparent; color: var(--dark); border: 1.5px solid var(--gray-light); }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(37,99,235,.5); }
+        .btn.ghost { background: transparent; color: var(--text); border: 2px solid var(--border); }
+        .btn.ghost:hover { background: rgba(37,99,235,.08); border-color: var(--primary); transform: translateY(-3px); }
         .theme-toggle {
-            width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
-            background: var(--white); font-size: 1.2rem; box-shadow: var(--shadow);
+            width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer;
+            background: var(--bg-card); font-size: 1.3rem; box-shadow: var(--shadow-lg);
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition);
         }
+        .theme-toggle:hover { transform: scale(1.1); box-shadow: var(--shadow-xl); }
 
         /* section titles */
         .sec-title { font-size: 1.05rem; font-weight: 900; margin: 26px 0 14px; display: flex; align-items: center; gap: 8px; }
+        .sec-title::after { content: ''; display: block; width: 40px; height: 3px; background: var(--gradient-primary); border-radius: 2px; }
 
         /* course cards */
         .courses { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
         .course {
-            background: var(--white); border-radius: 18px; box-shadow: var(--shadow);
-            padding: 18px; position: relative; overflow: hidden; transition: transform .2s;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+            padding: 18px; position: relative; overflow: hidden; transition: var(--transition);
         }
-        .course:hover { transform: translateY(-4px); }
+        .course:hover { transform: translateY(-5px); box-shadow: var(--shadow-xl); }
         .course .c-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
         .course .c-emoji {
-            width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; background: var(--lighter); flex-shrink: 0;
+            width: 52px; height: 52px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; background: var(--gradient-primary); flex-shrink: 0;
         }
         .course h3 { font-size: .95rem; font-weight: 800; line-height: 1.5; }
-        .course .c-meta { font-size: .74rem; color: var(--gray); margin-top: 3px; }
-        .c-progress-row { display: flex; justify-content: space-between; font-size: .76rem; color: var(--gray); margin-bottom: 6px; }
+        .course .c-meta { font-size: .74rem; color: var(--text-muted); margin-top: 3px; }
+        .c-progress-row { display: flex; justify-content: space-between; font-size: .76rem; color: var(--text-muted); margin-bottom: 6px; }
         .c-progress-row b { color: var(--primary); }
-        .track { height: 10px; border-radius: 999px; background: var(--light); overflow: hidden; }
-        [data-theme="dark"] .track { background: var(--dark); }
+        .track { height: 10px; border-radius: var(--radius-full); background: var(--light); overflow: hidden; }
+        [data-theme="dark"] .track { background: rgba(255,255,255,.08); }
         .fill {
-            height: 100%; border-radius: 999px; background: var(--gradient-primary);
+            height: 100%; border-radius: var(--radius-full); background: var(--gradient-primary);
             width: 0; transition: width 1s cubic-bezier(.3,.8,.3,1);
         }
         .course.done .fill { background: var(--gradient-green); }
@@ -113,11 +134,11 @@
         .c-btn:hover { transform: translateY(-2px); }
         .c-btn.main { background: var(--gradient-primary); color: #fff; }
         .course.done .c-btn.main { background: var(--gradient-green); }
-        .c-btn.sec { background: var(--lighter); color: var(--dark); border: 1.5px solid var(--light); }
-        [data-theme="dark"] .c-btn.sec { border-color: var(--dark); }
+        .c-btn.sec { background: var(--lighter); color: var(--text); border: 1.5px solid var(--border); }
+        [data-theme="dark"] .c-btn.sec { background: rgba(255,255,255,.06); border-color: var(--border); }
         .c-badge {
             position: absolute; top: 14px; inset-inline-end: 14px;
-            font-size: .68rem; font-weight: 900; padding: 4px 10px; border-radius: 999px;
+            font-size: .68rem; font-weight: 900; padding: 4px 10px; border-radius: var(--radius-full);
             background: rgba(16,185,129,.14); color: #059669;
         }
         .c-badge.inprogress { background: rgba(37,99,235,.12); color: var(--primary); }
@@ -126,25 +147,38 @@
         /* pending orders */
         .pending-card {
             display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-            background: var(--white); border-radius: 16px; box-shadow: var(--shadow);
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: var(--shadow);
             padding: 16px 18px; margin-bottom: 10px;
         }
         .pending-card .p-code { font-weight: 800; color: var(--primary); }
         .pending-card .p-total { margin-inline-start: auto; font-weight: 800; font-size: .85rem; }
         .badge {
-            font-size: .72rem; font-weight: 800; padding: 5px 12px; border-radius: 999px;
+            font-size: .72rem; font-weight: 800; padding: 5px 12px; border-radius: var(--radius-full);
             background: rgba(245,158,11,.14); color: #d97706;
         }
+        .badge.st-paid { background: rgba(16,185,129,.14); color: #059669; }
+        .badge.st-shipped { background: rgba(59,130,246,.14); color: #2563eb; }
+        .badge.st-awaiting_receipt { background: rgba(245,158,11,.14); color: #d97706; }
+        .badge.st-awaiting_cod { background: rgba(100,116,139,.14); color: var(--gray); }
+        .badge.st-canceled { background: rgba(239,68,68,.14); color: #dc2626; }
+        .live-dot {
+            display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+            background: #10b981; margin-inline-start: 6px; animation: livePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes livePulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+        .live-note { font-size: .72rem; color: var(--gray); font-weight: 400; margin-inline-start: 8px; }
         .empty {
-            background: var(--white); border-radius: 18px; box-shadow: var(--shadow);
-            text-align: center; padding: 50px 20px; color: var(--gray);
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+            text-align: center; padding: 50px 20px; color: var(--text-muted);
         }
         .empty .big { font-size: 3rem; margin-bottom: 10px; }
 
         #toast {
             position: fixed; bottom: 24px; inset-inline-start: 50%; transform: translateX(50%);
             background: var(--dark-secondary); color: var(--light); padding: 12px 22px;
-            border-radius: 999px; font-size: .85rem; font-weight: 700; opacity: 0;
+            border-radius: var(--radius-full); font-size: .85rem; font-weight: 700; opacity: 0;
             pointer-events: none; transition: opacity .3s, transform .3s; z-index: 200;
         }
         #toast.show { opacity: 1; transform: translateX(50%) translateY(-6px); }
@@ -161,7 +195,7 @@
             <button class="theme-toggle" id="themeBtn" title="تغییر تم">🌙</button>
         </div>
 
-        <div class="sec-title">🚧 سفارش‌های در انتظار</div>
+        <div class="sec-title">🚚 سفارش‌های من <span class="live-note"><span class="live-dot"></span> وضعیت زنده</span></div>
         <div id="pendingBox"></div>
 
         <div class="sec-title">📚 دوره‌های من</div>
@@ -262,13 +296,21 @@
             '</div>';
 
         /* pending orders */
+        const statusKeyMap = { 'پرداخت شده': 'paid', 'ارسال شد': 'shipped', 'در انتظار تایید رسید': 'awaiting_receipt', 'در انتظار پرداخت در محل': 'awaiting_cod', 'لغو شده': 'canceled' };
+        const badgeCls = o => 'st-' + (o.status_key || statusKeyMap[o.status] || 'awaiting_receipt');
+        const liveIcon = o => o._live ? ' <span class="live-dot"></span>' : '';
         document.getElementById('pendingBox').innerHTML = pend.length
             ? pend.map(o =>
                 '<div class="pending-card"><span class="p-code">' + o.code + '</span>' +
-                '<span class="badge">' + o.status + '</span>' +
+                '<span class="badge ' + badgeCls(o) + '">' + o.status + liveIcon(o) + '</span>' +
+                (o.status === 'ارسال شد' && o.tracking
+                    ? '<span style="font-size:.76rem;font-weight:700;color:var(--primary)">📮 کد رهگیری: ' + faDigits(o.tracking) + '</span>'
+                    : '') +
                 '<span style="font-size:.78rem;color:var(--gray)">' + faDate(o.date) + '</span>' +
                 '<span class="p-total">' + money(o.total || 0) + '</span>' +
-                '<a class="btn ghost" style="padding:7px 14px;font-size:.75rem" href="cart.html">تکمیل خرید</a></div>').join('')
+                (o.status === 'ارسال شد'
+                    ? ''
+                    : '<a class="btn ghost" style="padding:7px 14px;font-size:.75rem" href="cart.html">تکمیل خرید</a>') + '</div>').join('')
             : '<p style="font-size:.82rem;color:var(--gray);padding:4px 6px">سفارش در انتظاری ندارید ✓</p>';
 
         /* courses */
@@ -322,7 +364,47 @@
 
     window.addEventListener('storage', e => { if (e.key === 'hr_orders') render(); });
 
+    /* ---------- وضعیت زنده سفارش‌ها از سرور (داشبورد جنگو) ---------- */
+    const STATUS_CLASS = {
+        'paid': 'st-paid', 'shipped': 'st-shipped', 'awaiting_receipt': 'st-awaiting_receipt',
+        'awaiting_cod': 'st-awaiting_cod', 'canceled': 'st-canceled',
+    };
+    function mergeLiveStatuses(liveOrders) {
+        /* وضعیت سرور را روی سفارش‌های localStorage اعمال کن */
+        const byCode = new Map(liveOrders.map(o => [o.code, o]));
+        orders.forEach(o => {
+            const live = byCode.get(o.code);
+            if (!live) return;
+            o.status = live.status;
+            o.status_key = live.status_key;
+            o._live = true;
+            o.tracking = live.tracking || o.tracking;
+        });
+        /* سفارش‌هایی که فقط در سرور هستند (مثلا مرورگر دیگر) هم اضافه شوند */
+        liveOrders.forEach(live => {
+            if (!orders.some(o => o.code === live.code)) {
+                orders.push({
+                    code: live.code, status: live.status, total: live.total, date: live.date,
+                    tracking: live.tracking, items: live.items, customer: {},
+                });
+            }
+        });
+        try { localStorage.setItem('hr_orders', JSON.stringify(orders)); } catch (e) {}
+    }
+    async function refreshLiveStatuses() {
+        const codes = orders.map(o => o.code).filter(Boolean);
+        if (!codes.length) return;
+        try {
+            const res = await fetch('/api/orders/live-status/?codes=' + encodeURIComponent(codes.join(',')));
+            const data = await res.json();
+            if (data.ok && data.orders.length) { mergeLiveStatuses(data.orders); render(); }
+        } catch (e) { /* آفلاین — از localStorage */ }
+    }
+
     render();
+    refreshLiveStatuses();
+    setInterval(refreshLiveStatuses, 30000); /* هر ۳۰ ثانیه */
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshLiveStatuses(); });
     </script>
 </body>
 </html>

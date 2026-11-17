@@ -1,11 +1,12 @@
 /* DrRoshan PWA — service worker (no dependencies, vanilla) */
-const VERSION = 'hr-pwa-v1';
+const VERSION = 'hr-pwa-v3';
 const CORE = [
   './',
   './index.html',
   './cart.html',
   './checkout.html',
   './payment.html',
+  './style.css',
   './shop.css',
   './shop.js',
   './manifest.json',
@@ -52,17 +53,19 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static assets (images, css, js): cache first, then network.
+  // Static assets (images, css, js): stale-while-revalidate —
+  // serve the cached copy instantly, refresh the cache in the background so
+  // CSS/JS updates reach users after at most one reload.
   event.respondWith(
     caches.match(req).then((hit) => {
-      if (hit) return hit;
-      return fetch(req).then((res) => {
+      const network = fetch(req).then((res) => {
         if (res && res.ok && new URL(req.url).origin === self.location.origin) {
           const copy = res.clone();
           caches.open(VERSION).then((cache) => cache.put(req, copy));
         }
         return res;
       }).catch(() => hit);
+      return hit || network;
     })
   );
 });

@@ -306,19 +306,19 @@ input,select,textarea { font-family:inherit; }
                         </div>
                         <div class="f-group">
                             <label>شماره موبایل <span class="req">*</span></label>
-                            <input type="tel" id="fPhone" class="ltr" placeholder="09121234567" maxlength="11">
+                            <input type="tel" id="fPhone" class="ltr" placeholder="09121234567" maxlength="11" inputmode="numeric" autocomplete="tel">
                             <div class="f-error">شماره موبایل معتبر (۱۱ رقم با ۰۹) وارد کنید</div>
                         </div>
                     </div>
                     <div class="f-row">
                         <div class="f-group">
                             <label>کد ملی <span class="req">*</span></label>
-                            <input type="text" id="fNational" class="ltr" placeholder="کد ملی ۱۰ رقمی" maxlength="10">
+                            <input type="text" id="fNational" class="ltr" placeholder="کد ملی ۱۰ رقمی" maxlength="10" inputmode="numeric">
                             <div class="f-error">کد ملی معتبر وارد کنید</div>
                         </div>
                         <div class="f-group">
                             <label>ایمیل (اختیاری)</label>
-                            <input type="email" id="fEmail" class="ltr" placeholder="you@example.com">
+                            <input type="email" id="fEmail" class="ltr" placeholder="you@example.com" autocomplete="email">
                             <div class="f-error">ایمیل معتبر نیست</div>
                         </div>
                     </div>
@@ -340,7 +340,7 @@ input,select,textarea { font-family:inherit; }
                     <div class="f-row">
                         <div class="f-group">
                             <label>کد پستی</label>
-                            <input type="text" id="fPostal" class="ltr" placeholder="۱۰ رقم" maxlength="10">
+                            <input type="text" id="fPostal" class="ltr" placeholder="۱۰ رقم" maxlength="10" inputmode="numeric">
                             <div class="f-error">کد پستی باید ۱۰ رقم باشد</div>
                         </div>
                         <div class="f-group">
@@ -363,7 +363,7 @@ input,select,textarea { font-family:inherit; }
                     <div class="pay-grid">
                         <div class="pay-opt selected" data-method="gateway" onclick="selectPay(this)">
                             <div class="radio"></div><div class="ic">🏦</div>
-                            <div><h4>درگاه پرداخت اینترنتی (شبا/سامان)</h4><p>پرداخت امن با کلیه کارت‌های شتاب — هدایت به درگاه بانکی</p></div>
+                            <div><h4>درگاه پرداخت اینترنتی</h4><p>پرداخت امن با کلیه کارت‌های شتاب — هدایت به درگاه بانکی</p></div>
                         </div>
                         <div class="pay-opt" data-method="card" onclick="selectPay(this)">
                             <div class="radio"></div><div class="ic">💳</div>
@@ -377,10 +377,15 @@ input,select,textarea { font-family:inherit; }
 
                     <div class="pay-note" id="noteCard">
                         <b>💳 کارت به کارت:</b>
-                        <div class="cardnum">6219-8610-2356-1234</div>
-                        به نام هادی روشن | بانک سامان
-                        <button class="copy-btn" onclick="copyCard()">کپی شماره کارت</button>
-                        <p style="margin-top:8px;font-size:0.78rem;">پس از واریز، رسید را برای شماره ۰۹۱۱۲۹۲۵۱۲۰ ارسال کنید.</p>
+                        <div class="cardnum">6037-9973-4573-0791</div>
+                        به نام هادی روشن | بانک ملی
+                        <button class="copy-btn" onclick="copyCard(this)">کپی شماره کارت</button>
+                        <div style="margin-top:12px;">
+                            <label style="display:block;font-size:0.8rem;font-weight:700;margin-bottom:6px;">کد پیگیری / شماره رسید واریز:</label>
+                            <input type="text" id="cardReceipt" inputmode="numeric" autocomplete="off" placeholder="مثلا: ۱۲۳۴۵۶۷۸۹" style="width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius);font-size:0.95rem;font-weight:700;direction:ltr;text-align:center;background:var(--bg);color:var(--text);box-sizing:border-box;">
+                            <p style="margin-top:6px;font-size:0.75rem;">کد پیگیری روی رسید واریز شما درج شده است — با ثبت آن سفارش شما سریع‌تر تایید می‌شود.</p>
+                        </div>
+                        <p style="margin-top:8px;font-size:0.78rem;">پس از واریز، رسید را برای شماره ۰۹۱۱۲۹۲۱۵۱۲ ارسال کنید.</p>
                     </div>
                     <div class="pay-note" id="noteCod">
                         <b>📦 پرداخت در محل:</b> مبلغ سفارش هنگام تحویل به مامور پست پرداخت می‌شود. لطفا موجودی نقدی یا کارت‌خوان همراه داشته باشید.
@@ -407,7 +412,7 @@ input,select,textarea { font-family:inherit; }
                 <div class="card" style="margin-top:15px;font-size:0.78rem;color:var(--text-muted);line-height:2;">
                     🔒 اطلاعات شما رمزنگاری شده و محفوظ است.<br>
                     🎓 پس از تایید سفارش، لینک دوره‌ها برای شما ارسال می‌شود.<br>
-                    📞 پشتیبانی: ۰۹۱۱۲۹۲۵۱۲۰
+                    📞 پشتیبانی: ۰۹۱۱۲۹۲۱۵۱۲
                 </div>
             </div>
         </div>
@@ -549,7 +554,31 @@ function generateOrder(orderInfo, paymentResult) {
         orders.push(order);
         localStorage.setItem('hr_orders', JSON.stringify(orders));
     } catch (e) {}
+    pushOrderToServer(order, c => { if (typeof window.__syncCode === 'function') window.__syncCode(c); });
     return order;
+}
+
+// ارسال سفارش به سرور جنگو (داشبورد) — مشترک بین همهٔ مسیرهای خرید
+function pushOrderToServer(order, onUpdate) {
+    try {
+        fetch('/api/orders/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...order, payment: { ...order.payment, receipt: order.payment.receipt || '' } }),
+        }).then(r => r.json()).then(d => {
+            if (d && d.ok && d.code && d.code !== order.code) {
+                order.code = d.code;
+                try {
+                    const lo = JSON.parse(sessionStorage.getItem('hr_last_order') || 'null');
+                    if (lo && lo.code) { lo.code = d.code; sessionStorage.setItem('hr_last_order', JSON.stringify(lo)); }
+                    const orders = JSON.parse(localStorage.getItem('hr_orders') || '[]');
+                    const match = orders[orders.length - 1];
+                    if (match && match.payment && match.payment.method === order.payment.method && match.total === order.total) match.code = d.code, localStorage.setItem('hr_orders', JSON.stringify(orders));
+                } catch (e) {}
+                if (typeof onUpdate === 'function') onUpdate(d.code);
+            }
+        }).catch(() => {});
+    } catch (e) {}
 }
 
 // ---------- checkout draft shared across steps/pages ----------
@@ -605,11 +634,11 @@ function detectBank(num) {
     const bin = onlyDigits(num).slice(0, 4);
     const banks = {
         '6037': 'بانک ملی', '5859': 'بانک ملی', '5892': 'سپه', '6219': 'بانک سامان',
-        '6273': 'بانک تجارت', '5858': 'تجارت', '6219 Saman': '', '6280': 'بانک مسکن',
+        '6273': 'بانک تجارت', '5858': 'تجارت', '6280': 'بانک مسکن',
         '5022': 'بانک پاسارگاد', '6274': 'بانک اقتصاد نوین', '5028': 'بانک شهر',
         '5042': 'بانک رفاه', '6063': 'بانک ملت', '6104': 'بانک ملت',
         '9919': 'بانک ملت', '5894': 'بانک سپه', '6276': 'بانک صنعت و معدن',
-        '6037 ب': '', '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
+        '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
         '6362': 'بانک آینده', '5058': 'بانک توریسم', '6367': 'بانک آینده',
         '5029': 'بانک توسعه تعاون', '6064': 'بانک گردشگری', '2071': 'بانک توسعه صادرات'
     };
@@ -731,6 +760,23 @@ function shopConfetti() {
         return ok;
     }
 
+    // ذخیرهٔ خودکار فیلدهای فرم با هر تایپ (پیش‌نویس هرگز از بین نمی‌رود)
+    (function initAutosave() {
+        const fields = {
+            fName: 'name', fPhone: 'phone', fNational: 'national', fEmail: 'email',
+            fProvince: 'province', fAddress: 'address', fPostal: 'postal', fShippingMethod: 'shippingMethod'
+        };
+        Object.keys(fields).forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('input', () => {
+                const d = readDraft();
+                d[fields[id]] = el.value;
+                try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch (e) {}
+            });
+        });
+    })();
+
     function submitInfo() {
         if (!validateInfo()) return;
         infoData = {
@@ -755,11 +801,13 @@ function shopConfetti() {
         document.getElementById('noteCod').classList.toggle('show', chosenMethod === 'cod');
     }
 
-    function copyCard() {
-        const num = '6219861023561234';
-        (navigator.clipboard ? navigator.clipboard.writeText(num) : Promise.reject())
+    function copyCard(btn) {
+        const cardEl = btn ? btn.closest('.pay-note').querySelector('.cardnum') : null;
+        const num = cardEl ? cardEl.textContent.trim() : '6037-9973-4573-0791';
+        const digits = onlyDigits(num);
+        (navigator.clipboard ? navigator.clipboard.writeText(digits) : Promise.reject())
             .then(() => toastX('✓ شماره کارت کپی شد', 'ok'))
-            .catch(() => toastX('شماره کارت: ' + num));
+            .catch(() => toastX('شماره کارت: ' + digits));
     }
 
     function submitPayment() {
@@ -774,7 +822,9 @@ function shopConfetti() {
             location.href = 'payment.html';
         } else {
             // card-to-card / COD → direct order + show success screen
-            const order = generateOrder(infoData, { method: chosenMethod, status: chosenMethod === 'cod' ? 'در انتظار پرداخت در محل' : 'در انتظار تایید رسید' });
+            const receiptVal = (document.getElementById('cardReceipt')?.value || '').trim();
+            if (chosenMethod === 'card' && !receiptVal) { toastX('کد پیگیری رسید واریز را وارد کنید', 'err'); return; }
+            const order = generateOrder(infoData, { method: chosenMethod, status: chosenMethod === 'cod' ? 'در انتظار پرداخت در محل' : 'در انتظار تایید رسید', receipt: receiptVal });
             cartClear(); clearDraft();
             try { sessionStorage.setItem('hr_last_order', JSON.stringify(order)); } catch (e) {}
             showOrderSuccess(order);
@@ -800,6 +850,7 @@ function shopConfetti() {
             '<div class="receipt">' +
                 '<div class="r-row"><span>کد سفارش</span><b class="tr-code">' + order.code + '</b></div>' +
                 (order.payment.rrn ? '<div class="r-row"><span>کد رهگیری (RRN)</span><b style="direction:ltr;">' + order.payment.rrn + '</b></div>' : '') +
+                (order.payment.receipt ? '<div class="r-row"><span>کد پیگیری واریز</span><b style="direction:ltr;">' + order.payment.receipt + '</b></div>' : '') +
                 '<div class="r-row"><span>مبلغ</span><b>' + money(order.total) + '</b></div>' +
                 '<div class="r-row"><span>اقلام</span><b>' + faNum(order.items.reduce((s, i) => s + i.qty, 0)) + ' قلم</b></div>' +
                 '<div class="r-row"><span>روش پرداخت</span><b>' + payLabel + '</b></div>' +
@@ -818,6 +869,7 @@ function shopConfetti() {
             '<div class="co-step done"><span class="n">✓</span> پرداخت</div>' +
             '<div class="co-step done active"><span class="n">۴</span> تایید نهایی</div>';
         document.title = 'سفارش ' + order.code + ' | دکتر هادی روشن';
+        window.__syncCode = c => { const el = wrap.querySelector('.tr-code'); if (el) { el.textContent = c; document.title = 'سفارش ' + c + ' | دکتر هادی روشن'; } };
         shopConfetti();
     }
 
@@ -848,15 +900,7 @@ function shopConfetti() {
             '<tr><td>تاریخ</td><td>' + new Date(order.date).toLocaleString('fa-IR') + '</td></tr>' +
             '</table>' +
             '<p style="margin-top:20px;font-size:12px;color:#666;">موسسه آموزشی نسیم رامسر — دکتر هادی روشن</p>' +
-            '
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
-}
-</script>
-</body></html>');
+            '</body></html>');
         w.document.close();
         w.print();
     }

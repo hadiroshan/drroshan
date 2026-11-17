@@ -358,7 +358,7 @@ input,select,textarea { font-family:inherit; }
                 <input type="tel" maxlength="1" inputmode="numeric">
                 <input type="tel" maxlength="1" inputmode="numeric">
             </div>
-            <p class="gw-hint" style="color:#22c55e;">(نسخه نمایشی: کد در کنسول هم چاپ می‌شود)</p>
+            <p class="gw-hint" style="color:#22c55e;">نسخه نمایشی — کد: <b id="otpDemoCode" style="direction:ltr;">-----</b> (در کنسول هم چاپ می‌شود)</p>
             <button class="gw-submit" onclick="otpVerify()">تایید و ادامه ✓</button>
             <button class="gw-cancel" onclick="otpBack()">بازگشت</button>
         </div>
@@ -370,7 +370,7 @@ input,select,textarea { font-family:inherit; }
                 <h3>تراکنش موفق</h3>
                 <p>پرداخت شما با موفقیت انجام شد</p>
                 <div class="receipt" id="gwReceipt"></div>
-                <button class="btn-x btn-x-primary" onclick="finishOk()">بازگشت به فروشگاه ←</button>
+                <button class="btn-x btn-x-primary" onclick="finishOk()">🎓 دوره‌های من — تکمیل خرید ←</button>
             </div>
             <div class="gw-result fail" id="gwFail">
                 <div class="icon">❌</div>
@@ -531,6 +531,29 @@ function generateOrder(orderInfo, paymentResult) {
     return order;
 }
 
+// ارسال سفارش به سرور جنگو (داشبورد) — مشترک بین همهٔ مسیرهای خرید
+function pushOrderToServer(order, onUpdate) {
+    try {
+        fetch('/api/orders/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...order, payment: { ...order.payment, receipt: order.payment.receipt || '' } }),
+        }).then(r => r.json()).then(d => {
+            if (d && d.ok && d.code && d.code !== order.code) {
+                order.code = d.code;
+                try {
+                    const lo = JSON.parse(sessionStorage.getItem('hr_last_order') || 'null');
+                    if (lo && lo.code) { lo.code = d.code; sessionStorage.setItem('hr_last_order', JSON.stringify(lo)); }
+                    const orders = JSON.parse(localStorage.getItem('hr_orders') || '[]');
+                    const match = orders[orders.length - 1];
+                    if (match && match.payment && match.payment.method === order.payment.method && match.total === order.total) match.code = d.code, localStorage.setItem('hr_orders', JSON.stringify(orders));
+                } catch (e) {}
+                if (typeof onUpdate === 'function') onUpdate(d.code);
+            }
+        }).catch(() => {});
+    } catch (e) {}
+}
+
 // ---------- checkout draft shared across steps/pages ----------
 const DRAFT_KEY = 'hr_checkout_draft';
 function saveDraft(patch) {
@@ -584,11 +607,11 @@ function detectBank(num) {
     const bin = onlyDigits(num).slice(0, 4);
     const banks = {
         '6037': 'بانک ملی', '5859': 'بانک ملی', '5892': 'سپه', '6219': 'بانک سامان',
-        '6273': 'بانک تجارت', '5858': 'تجارت', '6219 Saman': '', '6280': 'بانک مسکن',
+        '6273': 'بانک تجارت', '5858': 'تجارت', '6280': 'بانک مسکن',
         '5022': 'بانک پاسارگاد', '6274': 'بانک اقتصاد نوین', '5028': 'بانک شهر',
         '5042': 'بانک رفاه', '6063': 'بانک ملت', '6104': 'بانک ملت',
         '9919': 'بانک ملت', '5894': 'بانک سپه', '6276': 'بانک صنعت و معدن',
-        '6037 ب': '', '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
+        '6392': 'بانک کشاورزی', '6038': 'بانک کشاورزی', '5054': 'بانک کوثر',
         '6362': 'بانک آینده', '5058': 'بانک توریسم', '6367': 'بانک آینده',
         '5029': 'بانک توسعه تعاون', '6064': 'بانک گردشگری', '2071': 'بانک توسعه صادرات'
     };
@@ -717,6 +740,9 @@ function paySubmit() {
     if (pin.length < 4) { failInput('رمز دوم اینترنتی را وارد کنید'); return; }
     if (cap !== captchaText.replace(/[’']/g, '')) { failInput('کد امنیتی اشتباه است'); newCaptcha(); return; }
 
+    // نزدیک‌ترین کارت آزمایشی معتبر (Luhn) برای راحتی تست
+    console.log('💡 کارت آزمایشی معتبر (Luhn): 6104-3378-2664-9822 — رمز: هر ۴ رقم، OTP نمایشی روی صفحه');
+
     currentCard = digits;
     proc('در حال بررسی اطلاعات کارت...', () => {
         // small realistic touch: demo declines specific test card
@@ -727,6 +753,7 @@ function paySubmit() {
         // OTP step
         otpCode = String(Math.floor(10000 + Math.random() * 89999));
         console.log('🔐 OTP (demo):', otpCode);
+        document.getElementById('otpDemoCode').textContent = otpCode; // فقط برای حالت نمایشی
         document.getElementById('otpCardTail').textContent = '**** ' + digits.slice(-4);
         document.getElementById('gwCardForm').style.display = 'none';
         document.getElementById('gwOtpForm').style.display = 'block';
@@ -783,6 +810,10 @@ function succeed() {
         card: '**** ' + currentCard.slice(-4),
         rrn: String(Math.floor(1e11 + Math.random() * 9e11))
     });
+    pushOrderToServer(order, c => {
+        const el = document.querySelector('#gwReceipt .tr-code');
+        if (el) el.textContent = c;
+    });
     try { sessionStorage.setItem('hr_last_order', JSON.stringify(order)); } catch (e) {}
     cartClear(); clearDraft();
 
@@ -822,6 +853,17 @@ function finishOk() {
     sessionStorage.removeItem('hr_returned_from_gateway');
     location.href = 'checkout.html#success';
 }
+// کلید Enter در فرم درگاه = پرداخت / تایید OTP
+(function () {
+    const cardFields = ['cardNum', 'cardMonth', 'cardYear', 'cardCvv', 'cardPin', 'captchaInput'];
+    cardFields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); paySubmit(); } });
+    });
+    document.querySelectorAll('#otpInputs input').forEach(inp => {
+        inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); otpVerify(); } });
+    });
+})();
 
 // success re-show (returning from gateway with #success)
 if (location.hash === '#success') {
@@ -844,7 +886,8 @@ if (location.hash === '#success') {
                 '</div>' +
                 '<p>📞 همکاران ما به‌زودی برای هماهنگی ارسال با شما تماس می‌گیرند.</p>' +
                 '<div style="display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;">' +
-                    '<a href="index.html" class="btn-x btn-x-primary">بازگشت به فروشگاه ←</a>' +
+                    '<a href="profile.html" class="btn-x btn-x-primary">🎓 دوره‌های من</a>' +
+                    '<a href="index.html" class="btn-x btn-x-ghost">بازگشت به فروشگاه ←</a>' +
                     '<button class="btn-x btn-x-ghost" onclick="printReceipt()">🖨 چاپ رسید</button>' +
                 '</div>';
             document.querySelector('.cart-layout').replaceWith(wrap);
@@ -858,31 +901,35 @@ if (location.hash === '#success') {
     } catch (e) { location.hash = ''; }
 }
 
+// باز کردن امن پنجرهٔ چاپ (مرورگرها popup ناخواسته را بلاک می‌کنند)
+function safeOpenReceipt() {
+    const w = window.open('', '_blank', 'width=460,height=640');
+    if (!w) {
+        toastX('مرورگر پنجرهٔ چاپ را بلاک کرد — لطفا popup را برای این سایت اجازه دهید', 'err');
+        return null;
+    }
+    return w;
+}
+
 function printReceipt() {
     const order = JSON.parse(sessionStorage.getItem('hr_last_order') || 'null');
-    if (!order) return;
-    const w = window.open('', '_blank', 'width=460,height=640');
+    if (!order) { toastX('رسیدی برای چاپ نیست', 'err'); return; }
+    const w = safeOpenReceipt();
+    if (!w) return;
+    const METHOD_LABELS = { gateway: 'درگاه بانکی', card: 'کارت به کارت', cod: 'پرداخت در محل' };
     w.document.write('<html dir="rtl"><head><meta charset="utf-8"><title>رسید ' + order.code + '</title>' +
         '<style>body{font-family:Tahoma;padding:25px;}table{width:100%;border-collapse:collapse;}td{padding:6px 0;border-bottom:1px dashed #ccc;font-size:13px;}h2{color:#2563eb;}</style></head><body>' +
         '<h2>🧾 رسید سفارش ' + order.code + '</h2>' +
         '<table>' +
-        '<tr><td>خریدار</td><td>' + order.customer.name + '</td></tr>' +
-        '<tr><td>موبایل</td><td>' + order.customer.phone + '</td></tr>' +
+        '<tr><td>خریدار</td><td>' + ((order.customer && order.customer.name) || '-') + '</td></tr>' +
+        '<tr><td>موبایل</td><td>' + ((order.customer && order.customer.phone) || '-') + '</td></tr>' +
         '<tr><td>مبلغ</td><td>' + order.total.toLocaleString('fa-IR') + ' تومان</td></tr>' +
-        '<tr><td>روش پرداخت</td><td>' + order.payment.method + '</td></tr>' +
+        '<tr><td>روش پرداخت</td><td>' + (METHOD_LABELS[order.payment.method] || order.payment.method) + '</td></tr>' +
         '<tr><td>وضعیت</td><td>' + order.payment.status + '</td></tr>' +
         '<tr><td>تاریخ</td><td>' + new Date(order.date).toLocaleString('fa-IR') + '</td></tr>' +
         '</table>' +
         '<p style="margin-top:20px;font-size:12px;color:#666;">موسسه آموزشی نسیم رامسر — دکتر هادی روشن</p>' +
-        '
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
-}
-</script>
-</body></html>');
+        '</body></html>');
     w.document.close();
     w.print();
 }
